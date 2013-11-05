@@ -55,8 +55,8 @@ osg::MatrixTransform* CityGmlReader::readCity(CityModel* city){
 	_origin.set(0,0,0);
 
 	//Dump des objets de la scène
-	#define RECURSIVE_DUMP
-	#ifndef RECURSIVE_DUMP
+#define RECURSIVE_DUMP
+#ifndef RECURSIVE_DUMP
 	const citygml::CityObjectsMap& cityObjectsMap = city->getCityObjectsMap();
 	citygml::CityObjectsMap::const_iterator it = cityObjectsMap.begin();
 	for ( ; it != cityObjectsMap.end(); ++it )
@@ -83,10 +83,10 @@ osg::MatrixTransform* CityGmlReader::readCity(CityModel* city){
 
 bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, osg::Group* parent ){
 	// Skip objects without geometry
-		if ( !object || !parent ) return false;
+	if ( !object || !parent ) return false;
 
-		osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-		geode->setName( object->getId() );
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	geode->setName( object->getId() );
 
 #ifdef RECURSIVE_DUMP
 	osg::Group* grp = new osg::Group;
@@ -97,8 +97,8 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	parent->addChild( geode )
 #endif
 
-	// Creer les drawables la géode
-	createCityObjectDrawable(object,geode);
+			// Creer les drawables la géode
+			createCityObjectDrawable(object,geode);
 
 	//TODO Ici ajouter les métadonnées à la géode
 	fetchCityObjectMetadata(object,geode);
@@ -107,113 +107,112 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	//si le drawable n'est pas crée à cause du LOD
 
 #ifdef RECURSIVE_DUMP
-			for ( unsigned int i = 0; i < object->getChildCount(); ++i )
-		        createCityObjectGeode( object->getChild(i), grp );
-		#endif
+	for ( unsigned int i = 0; i < object->getChildCount(); ++i )
+		createCityObjectGeode( object->getChild(i), grp );
+#endif
 
 
-return true;
+	return true;
 }
 
 void CityGmlReader::fetchCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 
 
-const AttributesMap& attributes=object->getAttributes();
+	const AttributesMap& attributes=object->getAttributes();
 
-//Impression des métadatas dans la console pour tester
-//TODO Comment récupérer facilement tous les types de données?
-cout<<"L'objet " <<(object->getAttribute("name"))<<" possède "<<attributes.size()<<" attributs , tests..."<<endl;
-cout<<(object->getAttribute("yearOfConstruction"))<<"\t année construction"<<endl;
-cout<<(object->getAttribute("measuredHeight"))<< "\t taille mesurée"<<endl;
-cout<<endl;
+	//Impression des métadatas dans la console pour tester
+	//TODO Comment récupérer facilement tous les types de données?
+	cout<<"L'objet " <<(object->getAttribute("name"))<<" possède "<<attributes.size()<<" attributs , tests..."<<endl;
+	cout<<(object->getAttribute("yearOfConstruction"))<<"\t année construction"<<endl;
+	cout<<(object->getAttribute("measuredHeight"))<< "\t taille mesurée"<<endl;
+	cout<<endl;
 
-
-//TODO Ajout des données dans la géode associée avec set/getUserData?
+	//TODO Ajout des données dans la géode associée avec set/getUserData?
 
 }
 
 void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 
-		for ( unsigned int i = 0; i < object->size(); i++ )
-		{
-			const citygml::Geometry& geometry = *object->getGeometry( i );
-			//Vérification du niveau de détail
+	for ( unsigned int i = 0; i < object->size(); i++ )
+	{
+		const citygml::Geometry& geometry = *object->getGeometry( i );
+		//Vérification du niveau de détail
 
-			const unsigned int currentLOD = geometry.getLOD();
-			unsigned int highestLOD = getHighestLodForObject(object);
-			        if (_useMaxLODOnly && (currentLOD < highestLOD || currentLOD < minimumLODToConsider )){
-			            continue;
-			        }
-
-			for ( unsigned int j = 0; j < geometry.size(); j++ )
-			{
-				const citygml::Polygon* p = geometry[j];
-				if ( p->getIndices().size() == 0 ) continue;
-				osg::Geometry* geom = new osg::Geometry;
-
-				// Geometry management
-				createCityObjectDrawableGeometry(p,geom);
-				// Material Management
-				createCityObjectDrawableMaterial(object,p,geom,geometry);
-				//Gérer la transparence si l'objet est une fenêtre
-				manageTransparencyifWindows(object,geode);
-				//Add geometry to the geode
-				geode->addDrawable(geom);
-			}
-
+		const unsigned int currentLOD = geometry.getLOD();
+		unsigned int highestLOD = getHighestLodForObject(object);
+		if (_useMaxLODOnly && (currentLOD < highestLOD || currentLOD < minimumLODToConsider )){
+			continue;
 		}
+
+		for ( unsigned int j = 0; j < geometry.size(); j++ )
+		{
+			const citygml::Polygon* p = geometry[j];
+			if ( p->getIndices().size() == 0 ) continue;
+			osg::Geometry* geom = new osg::Geometry;
+
+			// Geometry management
+			createCityObjectDrawableGeometry(p,geom);
+			// Material Management
+			createCityObjectDrawableMaterial(object,p,geom,geometry);
+			//Gérer la transparence si l'objet est une fenêtre
+			manageTransparencyifWindows(object,geode);
+			//Add geometry to the geode
+			geode->addDrawable(geom);
+		}
+
+	}
 
 }
 
 void CityGmlReader::createCityObjectDrawableGeometry(const citygml::Polygon* p, osg::Geometry* geom){
 	// Vertices
-					osg::Vec3Array* vertices = new osg::Vec3Array;
-					const std::vector<TVec3d>& vert = p->getVertices();
-					vertices->reserve( vert.size() );
-					for ( unsigned int k = 0; k < vert.size(); k++ )
-								{
-									osg::Vec3d pt( vert[k].x, vert[k].y, vert[k].z );
-					                if ( isFirstRender )
-									{
-										_origin.set( pt );
-										isFirstRender = false;
-									}
-									vertices->push_back( pt - _origin );
-								}
+	osg::Vec3Array* vertices = new osg::Vec3Array;
+	const std::vector<TVec3d>& vert = p->getVertices();
+	vertices->reserve( vert.size() );
+	for ( unsigned int k = 0; k < vert.size(); k++ )
+	{
+		osg::Vec3d pt( vert[k].x, vert[k].y, vert[k].z );
+		if ( isFirstRender )
+		{
+			_origin.set( pt );
+			isFirstRender = false;
+		}
+		vertices->push_back( pt - _origin );
+	}
 
-					geom->setVertexArray( vertices );
+	geom->setVertexArray( vertices );
 
-					// Indices
-					osg::DrawElementsUInt* indices = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
-					const std::vector<unsigned int>& ind = p->getIndices();
-					indices->reserve( ind.size() );
-					for ( unsigned int i = 0 ; i < ind.size() / 3; i++ )
-					{
-						indices->push_back( ind[ i * 3 + 0 ] );
-						indices->push_back( ind[ i * 3 + 1 ] );
-						indices->push_back( ind[ i * 3 + 2 ] );
-					}
+	// Indices
+	osg::DrawElementsUInt* indices = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
+	const std::vector<unsigned int>& ind = p->getIndices();
+	indices->reserve( ind.size() );
+	for ( unsigned int i = 0 ; i < ind.size() / 3; i++ )
+	{
+		indices->push_back( ind[ i * 3 + 0 ] );
+		indices->push_back( ind[ i * 3 + 1 ] );
+		indices->push_back( ind[ i * 3 + 2 ] );
+	}
 
-					geom->addPrimitiveSet( indices );
+	geom->addPrimitiveSet( indices );
 
-					// Normals
-					osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array;
-					const std::vector<TVec3f>& norm = p->getNormals();
-					normals->reserve( norm.size() );
-					for ( unsigned int k = 0; k < norm.size(); k++ )
-						normals->push_back( osg::Vec3( norm[k].x, norm[k].y, norm[k].z ) );
+	// Normals
+	osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array;
+	const std::vector<TVec3f>& norm = p->getNormals();
+	normals->reserve( norm.size() );
+	for ( unsigned int k = 0; k < norm.size(); k++ )
+		normals->push_back( osg::Vec3( norm[k].x, norm[k].y, norm[k].z ) );
 
-					geom->setNormalArray( normals.get() );
-					geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+	geom->setNormalArray( normals.get() );
+	geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 }
 
 
 void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* object,const citygml::Polygon* p, osg::Geometry* geom,const citygml::Geometry& geometry){
 	osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-			shared_colors->push_back( osg::Vec4( object->getDefaultColor().r, object->getDefaultColor().g, object->getDefaultColor().b, object->getDefaultColor().a ) );
+	shared_colors->push_back( osg::Vec4( object->getDefaultColor().r, object->getDefaultColor().g, object->getDefaultColor().b, object->getDefaultColor().a ) );
 
-			osg::ref_ptr<osg::Vec4Array> roof_color = new osg::Vec4Array;
-			roof_color->push_back( osg::Vec4( 0.9f, 0.1f, 0.1f, 1.0f ) );
+	osg::ref_ptr<osg::Vec4Array> roof_color = new osg::Vec4Array;
+	roof_color->push_back( osg::Vec4( 0.9f, 0.1f, 0.1f, 1.0f ) );
 
 	osg::ref_ptr<osg::StateSet> stateset = geom->getOrCreateStateSet();
 
@@ -298,59 +297,59 @@ void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* 
 				osg::notify(osg::NOTICE) << "  Warning: Texture coordinates not found for poly " << p->getId() << std::endl;
 		}
 	}
-				// Color management
-				geom->setColorArray( ( !colorset && geometry.getType() == citygml::GT_Roof ) ? roof_color.get() : shared_colors.get() );
-				geom->setColorBinding( osg::Geometry::BIND_OVERALL );
-	#if 0
-				// Set lighting model to two sided
-				osg::ref_ptr< osg::LightModel > lightModel = new osg::LightModel;
-				lightModel->setTwoSided( true );
-				stateset->setAttributeAndModes( lightModel.get(), osg::StateAttribute::ON );
-	#endif
+	// Color management
+	geom->setColorArray( ( !colorset && geometry.getType() == citygml::GT_Roof ) ? roof_color.get() : shared_colors.get() );
+	geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+#if 0
+	// Set lighting model to two sided
+	osg::ref_ptr< osg::LightModel > lightModel = new osg::LightModel;
+	lightModel->setTwoSided( true );
+	stateset->setAttributeAndModes( lightModel.get(), osg::StateAttribute::ON );
+#endif
 }
 
 
 void CityGmlReader::manageTransparencyifWindows(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 	if ( object->getType() == citygml::COT_Window )
-		{
-			osg::StateSet *geodeSS( geode->getOrCreateStateSet() );
+	{
+		osg::StateSet *geodeSS( geode->getOrCreateStateSet() );
 
-	        osg::ref_ptr<osg::BlendFunc> blendFunc = new osg::BlendFunc(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA,osg::BlendFunc::CONSTANT_ALPHA);
-			geodeSS->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON );
+		osg::ref_ptr<osg::BlendFunc> blendFunc = new osg::BlendFunc(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA,osg::BlendFunc::CONSTANT_ALPHA);
+		geodeSS->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON );
 
-	        osg::ref_ptr<osg::BlendColor> blendColor = new osg::BlendColor(osg::Vec4( 1., 1., 1., object->getDefaultColor().a ));
-			geodeSS->setAttributeAndModes( blendColor.get(), osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON );
+		osg::ref_ptr<osg::BlendColor> blendColor = new osg::BlendColor(osg::Vec4( 1., 1., 1., object->getDefaultColor().a ));
+		geodeSS->setAttributeAndModes( blendColor.get(), osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON );
 
-	        osg::ref_ptr<osg::Depth> depth = new osg::Depth;
-	        depth->setWriteMask( false );
-	        geodeSS->setAttributeAndModes( depth.get(), osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON );
+		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+		depth->setWriteMask( false );
+		geodeSS->setAttributeAndModes( depth.get(), osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON );
 
-			geodeSS->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-		}
+		geodeSS->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+	}
 }
 
 
 unsigned int CityGmlReader::getHighestLodForObject( const citygml::CityObject * object){
-    unsigned int highestLOD = 0;
-    // first find out highest LOD for this object
-    for (unsigned int i = 0; i < object->size(); i++) {
-        const citygml::Geometry &geometry = *object->getGeometry(i);
+	unsigned int highestLOD = 0;
+	// first find out highest LOD for this object
+	for (unsigned int i = 0; i < object->size(); i++) {
+		const citygml::Geometry &geometry = *object->getGeometry(i);
 
-        if (geometry.getLOD() > highestLOD){
-            highestLOD = geometry.getLOD();
-        }
-    }
+		if (geometry.getLOD() > highestLOD){
+			highestLOD = geometry.getLOD();
+		}
+	}
 
 #ifdef RECURSIVE_DUMP
-    //check for the highest LODs of Children
-    for (unsigned int i = 0; i < object->getChildCount(); ++i){
-        unsigned int tempHighestLOD = getHighestLodForObject(object->getChild(i));
-        if (tempHighestLOD > highestLOD){
-            tempHighestLOD = highestLOD;
-        }
-    }
+	//check for the highest LODs of Children
+	for (unsigned int i = 0; i < object->getChildCount(); ++i){
+		unsigned int tempHighestLOD = getHighestLodForObject(object->getChild(i));
+		if (tempHighestLOD > highestLOD){
+			tempHighestLOD = highestLOD;
+		}
+	}
 #endif
-    return highestLOD;
+return highestLOD;
 }
 
 string CityGmlReader::parseFilePathToFileFolder(string _filePath){
