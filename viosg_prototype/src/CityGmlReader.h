@@ -9,7 +9,7 @@
 #define CITYGMLREADER_H_
 
 
-#include "citygml.h"
+
 
 #include <osg/Group>
 #include <osgDB/ReadFile>
@@ -40,22 +40,36 @@
 
 #include <algorithm>
 #include <cctype>
-
+#include "citygml.h"
 
 
 
 class CityGmlReader {
 public:
+	CityGmlReader();
 	osg::MatrixTransform* readCityGmlFile(std::string FilePath);
 private:
+	//Paramètres utilisateurs pour le niveau de détail
+	bool _useMaxLODOnly;
+	unsigned int minimumLODToConsider;
+
+	//Variables internes pour le rendu des géométries
+	std::string filePath;
 	bool isFirstRender;
 	osg::Vec3 _origin;
+	std::map< std::string, osg::Texture2D* > _textureMap;
 
+	//Méthodes internes pour la génération de la scène
 	citygml::CityModel* openFile(std::string filePath);
 	osg::MatrixTransform* readCity(citygml::CityModel* city);
 	bool createCityObjectGeode( const citygml::CityObject* object, osg::Group* parent );
-	void createCityObjectGeometry(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode);
 	void createCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode);
+	void createCityObjectDrawable(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode);
+	void createCityObjectDrawableGeometry(const citygml::Polygon* p, osg::Geometry* geom);
+	void createCityObjectDrawableMaterial(const citygml::CityObject* object,const citygml::Polygon* p, osg::Geometry* geom,const citygml::Geometry& geometry);
+	void manageTransparencyifWindows(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode);
+	unsigned int getHighestLodForObject( const citygml::CityObject * object);
+std::string parseFilePathToFileFolder(std::string _filePath);
 };
 
 #endif /* CITYGMLREADER_H_ */

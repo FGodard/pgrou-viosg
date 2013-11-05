@@ -19,8 +19,7 @@ using namespace citygml;
 int main()
 {
 	/*VARIABLES*/
-	string filePath="/home/blam/samples/1.citygml";
-
+	string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
 
 /*CHARGEMENT DU FICHIER CITYGML */
     CityGmlReader cityGmlReader;
