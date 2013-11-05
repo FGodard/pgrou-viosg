@@ -76,7 +76,7 @@ int main()
 /* START VIEWER */
 
 
-        //return (viewer.run());
+        return (viewer.run());
 }
 
 

@@ -46,14 +46,16 @@
 
 class CityGmlReader {
 public:
-	CityGmlReader();
-	virtual ~CityGmlReader();
 	osg::MatrixTransform* readCityGmlFile(std::string FilePath);
 private:
+	bool isFirstRender;
+	osg::Vec3 _origin;
+
 	citygml::CityModel* openFile(std::string filePath);
 	osg::MatrixTransform* readCity(citygml::CityModel* city);
 	bool createCityObjectGeode( const citygml::CityObject* object, osg::Group* parent );
-
+	void createCityObjectGeometry(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode);
+	void createCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode);
 };
 
 #endif /* CITYGMLREADER_H_ */
