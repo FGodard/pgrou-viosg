@@ -46,19 +46,16 @@ osg::MatrixTransform* CityGmlReader::readCity(CityModel* city){
 	osg::notify(osg::NOTICE) << city->size() << " city objects read." << std::endl;
 	osg::notify(osg::NOTICE) << "Creation of the OSG city objects' geometry..." << std::endl;
 
-	//Création de la matrice
+	//Création de la matrice root
 	osg::MatrixTransform *root = new osg::MatrixTransform();
-	const TVec3d& t = city->getTranslationParameters();
-
 	root->setName( city->getId() );
 
 	//Préparations des variables pour le rendu des géométries
 	isFirstRender=true;
 	_origin.set(0,0,0);
 
-	//Création des objets de la scène
+	//Dump des objets de la scène
 	#define RECURSIVE_DUMP
-
 	#ifndef RECURSIVE_DUMP
 	const citygml::CityObjectsMap& cityObjectsMap = city->getCityObjectsMap();
 	citygml::CityObjectsMap::const_iterator it = cityObjectsMap.begin();
@@ -77,7 +74,9 @@ osg::MatrixTransform* CityGmlReader::readCity(CityModel* city){
 	for ( unsigned int i = 0; i < roots.size(); ++i ) createCityObjectGeode( roots[i], root );
 #endif
 
+	const TVec3d& t = city->getTranslationParameters();
 	root->setMatrix(osg::Matrixd::translate(t.x+_origin.x() , t.y+_origin.y() , t.z+_origin.z() ));
+
 	osg::notify(osg::NOTICE) << "Done." << std::endl;
 	return root;
 }
@@ -98,10 +97,14 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	parent->addChild( geode )
 #endif
 
-	// Creer les drawables pour chaque géode
+	// Creer les drawables la géode
 	createCityObjectDrawable(object,geode);
 
 	//TODO Ici ajouter les métadonnées à la géode
+	fetchCityObjectMetadata(object,geode);
+
+	//TODO Attention que se passe-t'il pour les metadata
+	//si le drawable n'est pas crée à cause du LOD
 
 #ifdef RECURSIVE_DUMP
 			for ( unsigned int i = 0; i < object->getChildCount(); ++i )
@@ -110,6 +113,23 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 
 
 return true;
+}
+
+void CityGmlReader::fetchCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
+
+
+const AttributesMap& attributes=object->getAttributes();
+
+//Impression des métadatas dans la console pour tester
+//TODO Comment récupérer facilement tous les types de données?
+cout<<"L'objet " <<(object->getAttribute("name"))<<" possède "<<attributes.size()<<" attributs , tests..."<<endl;
+cout<<(object->getAttribute("yearOfConstruction"))<<"\t année construction"<<endl;
+cout<<(object->getAttribute("measuredHeight"))<< "\t taille mesurée"<<endl;
+cout<<endl;
+
+
+//TODO Ajout des données dans la géode associée avec set/getUserData?
+
 }
 
 void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
@@ -240,8 +260,7 @@ void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* 
 				{
 					// Load a new texture
 					osg::notify(osg::NOTICE) << "  Loading texture " << t->getUrl() << "..." << std::endl;
-//TODO Le programme ne trouve pas les textures, il faut lui donner le chemin complet
-					//TODO Test a modifier
+
 					if ( osg::Image* image = osgDB::readImageFile(parseFilePathToFileFolder(filePath)+ t->getUrl() ) )
 					{
 						texture = new osg::Texture2D;
@@ -279,10 +298,8 @@ void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* 
 				osg::notify(osg::NOTICE) << "  Warning: Texture coordinates not found for poly " << p->getId() << std::endl;
 		}
 	}
-	// Color management
-
+				// Color management
 				geom->setColorArray( ( !colorset && geometry.getType() == citygml::GT_Roof ) ? roof_color.get() : shared_colors.get() );
-
 				geom->setColorBinding( osg::Geometry::BIND_OVERALL );
 	#if 0
 				// Set lighting model to two sided
@@ -290,9 +307,7 @@ void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* 
 				lightModel->setTwoSided( true );
 				stateset->setAttributeAndModes( lightModel.get(), osg::StateAttribute::ON );
 	#endif
-
 }
-
 
 
 void CityGmlReader::manageTransparencyifWindows(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
@@ -339,7 +354,7 @@ unsigned int CityGmlReader::getHighestLodForObject( const citygml::CityObject * 
 }
 
 string CityGmlReader::parseFilePathToFileFolder(string _filePath){
-	//TODO à modifier car ne marchera que sous Linux
+	//TODO pas terrible car ne marchera que sous Linux
 	const string::size_type p = _filePath.find_last_of("/");
 	return _filePath.substr(0, p)+"/";
 }
