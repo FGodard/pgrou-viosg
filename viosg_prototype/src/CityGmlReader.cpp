@@ -97,14 +97,12 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	parent->addChild( geode )
 #endif
 
-			// Creer les drawables la géode
-			createCityObjectDrawable(object,geode);
+	// Creer le contenu graphique de la géode
+	createCityObjectDrawable(object,geode);
 
-	//TODO Ici ajouter les métadonnées à la géode
+	//Ajout des métadonnées à la géode
 	fetchCityObjectMetadata(object,geode);
 
-	//TODO Attention que se passe-t'il pour les metadata
-	//si le drawable n'est pas crée à cause du LOD
 
 #ifdef RECURSIVE_DUMP
 	for ( unsigned int i = 0; i < object->getChildCount(); ++i )
@@ -116,18 +114,18 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 }
 
 void CityGmlReader::fetchCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
-
-
 	const AttributesMap& attributes=object->getAttributes();
 
 	//Impression des métadatas dans la console pour tester
 	//TODO Comment récupérer facilement tous les types de données?
 	cout<<"L'objet " <<(object->getAttribute("name"))<<" possède "<<attributes.size()<<" attributs , tests..."<<endl;
+	/*
 	cout<<(object->getAttribute("yearOfConstruction"))<<"\t année construction"<<endl;
 	cout<<(object->getAttribute("measuredHeight"))<< "\t taille mesurée"<<endl;
 	cout<<endl;
+	 */
 
-	//TODO Ajout des données dans la géode associée avec set/getUserData?
+	//TODO Stocker des données dans la géode associée avec set/getUserData?
 
 }
 
@@ -349,7 +347,7 @@ unsigned int CityGmlReader::getHighestLodForObject( const citygml::CityObject * 
 		}
 	}
 #endif
-return highestLOD;
+	return highestLOD;
 }
 
 string CityGmlReader::parseFilePathToFileFolder(string _filePath){

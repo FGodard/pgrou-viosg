@@ -18,8 +18,8 @@ void showMetadata(osg::ref_ptr<osg::Group> cityGroup);
 int main()
 {
 	/*FICHIER A CHARGER*/
-	//string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
-	string filePath="/home/blam/samples/1.citygml";
+	string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
+	//string filePath="/home/blam/samples/1.citygml";
 
 
 	/*CHARGEMENT DU FICHIER CITYGML */
