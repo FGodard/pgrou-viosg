@@ -15,6 +15,7 @@ CityGmlReader::CityGmlReader(){
 	//TODO pouvoir proposer à l'utilisateur de modifier le niveau de détail
 	_useMaxLODOnly=false;
 	minimumLODToConsider=0;
+	isFirstRender=true;
 }
 
 
@@ -22,7 +23,7 @@ osg::MatrixTransform* CityGmlReader::readCityGmlFile(string filePath){
 	osg::notify(osg::NOTICE)<<"Trying to open given file..."<<endl;
 	citygml::CityModel* city=openFile(filePath);
 	osg::MatrixTransform* cityScene=readCity(city);
-	delete city;
+
 	return cityScene;
 }
 
@@ -115,18 +116,8 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 
 void CityGmlReader::fetchCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 	const AttributesMap& attributes=object->getAttributes();
-
-	//Impression des métadatas dans la console pour tester
-	//TODO Comment récupérer facilement tous les types de données?
-	cout<<"L'objet " <<(object->getAttribute("name"))<<" possède "<<attributes.size()<<" attributs , tests..."<<endl;
-	/*
-	cout<<(object->getAttribute("yearOfConstruction"))<<"\t année construction"<<endl;
-	cout<<(object->getAttribute("measuredHeight"))<< "\t taille mesurée"<<endl;
-	cout<<endl;
-	 */
-
-	//TODO Stocker des données dans la géode associée avec set/getUserData?
-
+	Metadata* metadata=new Metadata(attributes);
+	geode->setUserData(metadata);
 }
 
 void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){

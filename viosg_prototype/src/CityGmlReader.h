@@ -40,8 +40,9 @@
 
 #include <algorithm>
 #include <cctype>
-#include "citygml.h"
 
+#include "citygml.h"
+#include "Metadata.h"
 
 
 class CityGmlReader {
