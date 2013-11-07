@@ -12,10 +12,15 @@
 #include <cctype>
 #include <osg/Referenced>
 #include "citygml.h"
-//Dérive de osg::Referenced pour pouvoir stocker Metadata dans la géode avec setUserData
+
+/**
+ * Classe pour stocker les attributs des métadonnées
+ * Dérive de osg::Referenced pour pouvoir les gérer depuis les objets osg avec set/getUserData
+ */
 class Metadata :public osg::Referenced {
 public:
 	Metadata(const citygml::AttributesMap& _attributes):attributes(_attributes){};
+
 	//Hashmap contenant les métadonnéees
 	const citygml::AttributesMap& attributes;
 };

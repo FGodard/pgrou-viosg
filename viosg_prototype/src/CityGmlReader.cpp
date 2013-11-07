@@ -18,7 +18,9 @@ CityGmlReader::CityGmlReader(){
 	isFirstRender=true;
 }
 
-
+/**
+ * Lit un fichier citygml au chemin fourni et renvoie le graphe de scène complet
+ */
 osg::MatrixTransform* CityGmlReader::readCityGmlFile(string filePath){
 	osg::notify(osg::NOTICE)<<"Trying to open given file..."<<endl;
 	citygml::CityModel* city=openFile(filePath);
@@ -28,6 +30,9 @@ osg::MatrixTransform* CityGmlReader::readCityGmlFile(string filePath){
 }
 
 
+/**
+ * Ouvre le fichier avec le parser libcitygml
+ */
 CityModel* CityGmlReader::openFile(string _filePath){
 	filePath=_filePath;
 	citygml::ParserParams params;
@@ -42,6 +47,9 @@ CityModel* CityGmlReader::openFile(string _filePath){
 	return city;
 }
 
+/**
+ * Génère le graphe de scène correspondant à l'arbre des objets citygml
+ */
 osg::MatrixTransform* CityGmlReader::readCity(CityModel* city){
 	if(!city)return NULL;
 	osg::notify(osg::NOTICE) << city->size() << " city objects read." << std::endl;
@@ -82,6 +90,9 @@ osg::MatrixTransform* CityGmlReader::readCity(CityModel* city){
 	return root;
 }
 
+/**
+ * Génère la géode correspondant à un objet citygml et le contenu
+ */
 bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, osg::Group* parent ){
 	// Skip objects without geometry
 	if ( !object || !parent ) return false;
@@ -98,8 +109,8 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	parent->addChild( geode )
 #endif
 
-	// Creer le contenu graphique de la géode
-	createCityObjectDrawable(object,geode);
+			// Creer le contenu graphique de la géode
+			createCityObjectDrawable(object,geode);
 
 	//Ajout des métadonnées à la géode
 	fetchCityObjectMetadata(object,geode);
@@ -114,12 +125,19 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	return true;
 }
 
+
+/**
+ * Récupère les metadonnées de l'objet citygml et les associe à la géode crée
+ */
 void CityGmlReader::fetchCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 	const AttributesMap& attributes=object->getAttributes();
 	Metadata* metadata=new Metadata(attributes);
 	geode->setUserData(metadata);
 }
 
+/**
+ * Crée le contenu graphique de la géode à partir de l'objet citygml
+ */
 void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 
 	for ( unsigned int i = 0; i < object->size(); i++ )
@@ -153,6 +171,9 @@ void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, 
 
 }
 
+/**
+ * Crée le contenu géométrique du drawable à partir de l'objet citygml
+ */
 void CityGmlReader::createCityObjectDrawableGeometry(const citygml::Polygon* p, osg::Geometry* geom){
 	// Vertices
 	osg::Vec3Array* vertices = new osg::Vec3Array;
@@ -195,7 +216,9 @@ void CityGmlReader::createCityObjectDrawableGeometry(const citygml::Polygon* p, 
 	geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 }
 
-
+/**
+ * Crée la partie surface du drawable (couleurs/textures) à partir de l'objet citygml
+ */
 void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* object,const citygml::Polygon* p, osg::Geometry* geom,const citygml::Geometry& geometry){
 	osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
 	shared_colors->push_back( osg::Vec4( object->getDefaultColor().r, object->getDefaultColor().g, object->getDefaultColor().b, object->getDefaultColor().a ) );
@@ -298,6 +321,9 @@ void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* 
 }
 
 
+/**
+ * Change la transparence de la géode si l'objet citygml associé est de type fenêtre
+ */
 void CityGmlReader::manageTransparencyifWindows(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 	if ( object->getType() == citygml::COT_Window )
 	{
@@ -317,7 +343,9 @@ void CityGmlReader::manageTransparencyifWindows(const citygml::CityObject* objec
 	}
 }
 
-
+/**
+ * Renvoie le plus haut niveau de détail parmi l'objet et ses enfants
+ */
 unsigned int CityGmlReader::getHighestLodForObject( const citygml::CityObject * object){
 	unsigned int highestLOD = 0;
 	// first find out highest LOD for this object
@@ -341,6 +369,9 @@ unsigned int CityGmlReader::getHighestLodForObject( const citygml::CityObject * 
 	return highestLOD;
 }
 
+/**
+ * Renvoie le chemin du dossier du fichier chargé
+ */
 string CityGmlReader::parseFilePathToFileFolder(string _filePath){
 	//TODO pas terrible car ne marchera que sous Linux
 	const string::size_type p = _filePath.find_last_of("/");

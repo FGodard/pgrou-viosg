@@ -9,6 +9,9 @@
 #include <string.h>
 using namespace std;
 
+/**
+ * NodeVisitor pour récupérer toutes les géodes dans l'arbre traversé
+ */
 class GeodeFinder : public osg::NodeVisitor {
    public:
 

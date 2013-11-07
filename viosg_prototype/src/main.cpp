@@ -12,10 +12,10 @@
 using namespace std;
 using namespace citygml;
 
-//Déclarations fonctions de tests, voir en bas pour leur implémentation
+//Déclarations des fonctions de tests, voir en bas pour leur implémentation
 void showCitySceneGraph(osg::ref_ptr<osg::Group> cityGroup);
-void showMetadata(osg::Object* geode);
-void showMetadataAllGeodes(osg::ref_ptr<osg::Group> cityGroup);
+void showMetadata(osg::Object* object);
+void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup);
 
 int main()
 {
@@ -33,7 +33,7 @@ int main()
 	//Afficher l'arbre de la scène sur 3 niveaux dans la console
 	showCitySceneGraph(cityGroup);
 	//Récupérer toutes les géodes de la scène et afficher leurs métadonnées
-	showMetadataAllGeodes(cityGroup);
+	showAllMetadata(cityGroup);
 
 
 	//-----PARTIE HABITUELLE OSG
@@ -55,18 +55,20 @@ int main()
 
 // -----FONCTIONS POUR RECUPERER LES DONNES DE LA SCENE ICI
 
-//Imprime les métadonnées d'un objet de l'arbre osg
+/**
+ * Affiche les métadonnées contenu dans un objet osg
+ * Il charge le userData, si il est de type Metadata, c'est qu'il contient des métadonnées
+ */
 void showMetadata(osg::Object* osgObject){
 	//On récupère le userdata de l'object
 	osg::ref_ptr<Metadata> metadata =
 			dynamic_cast<Metadata*> (osgObject->getUserData() );
 
-	//Si il est de type Metadata alors c'est qu'on y a stocké des métadonnées
 	if(metadata)
 	{
-		//metadata.attributes contient les métadonnées sous la forme forme Hashmap
+		//metadata->attributes contient les métadonnées sous une forme dérivée de Hashmap
 		//On cherche une valeur en cherchant la clé dans le hashmap
-//TODO à faire
+		//TODO à faire
 		//ou on affiche toutes les métadonnées avec un iterator
 		AttributesMap::const_iterator iterator;
 		for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
@@ -78,28 +80,30 @@ void showMetadata(osg::Object* osgObject){
 	}
 }
 
-
-//Afficher les métadonnées pour tous les objets de la scène
-void showMetadataAllGeodes(osg::ref_ptr<osg::Group> cityGroup){
-	cout<<endl<<"AFFICHAGE DES METADONNEES DES GEODES"<<endl;
+/**
+ * Affiche toutes les métadonnées présentes
+ * On utilise le geodeFinder pour récupérer tous les objets type géode de l'arbre
+ * Car les métadonnées sont stockées uniquement dans les objets Géode pour l'instant
+ */
+void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup){
+	cout<<endl<<"AFFICHAGE DES METADONNEES"<<endl;
 	GeodeFinder geodeFinder;
-	//On utilise le geodeFinder pour récupérer tous les objets type géode
+
 	cityGroup->accept(geodeFinder);
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
 	for(unsigned int i=0;i<geodes.size();i++){
 		showMetadata(geodes[i]);
 	}
-
-
 }
 
+/**
+ * Parcoure manuellement l'arbre de scène pour afficher la structure de l'arbre
+ */
 void showCitySceneGraph(osg::ref_ptr<osg::Group> cityGroup){
 	osg::ref_ptr <osg::Group> subGroup1;
 	osg::ref_ptr <osg::Group> subGroup2;
 	osg::ref_ptr <osg::Group> subGroup3;
-
-//Parcours manuel de la scène de graphe
 
 	cout<<endl<<"AFFICHAGE DE L'ARBRE DU FICHIER:"<<endl;
 	for (unsigned int i = 0; i < cityGroup->getNumChildren(); i++) {
