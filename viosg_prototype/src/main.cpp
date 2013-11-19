@@ -6,8 +6,13 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/StateSetManipulator>
 
+//Chargement fichier
 #include "CityGmlReader.h"
 #include "GeodeFinder.h"
+
+//Selection des objets dans la scène
+#include "SelectionKeyEventHandler.h"
+#include "SelectionKeyEventHandler.cpp"
 
 using namespace std;
 using namespace citygml;
@@ -19,15 +24,23 @@ void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup);
 
 int main()
 {
+	osgViewer::Viewer viewer ;
+	osg::ref_ptr<osg::Group> root (new osg::Group);
+
 	/*-----FICHIER A CHARGER*/
-	string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
-	//string filePath="/home/blam/samples/1.citygml";
+	//string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
+	string filePath="/home/blam/samples/1.citygml";
 
 
 	/*-----CHARGEMENT DU FICHIER CITYGML */
 	CityGmlReader cityGmlReader;
 	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
 
+
+	/*-----AJOUT EVENT HANDLER POUR LA SELECTION OBJETS*/
+	 IntersectionSelector* myInterSectionSelector=new IntersectionSelector();
+	 SelectionKeyEventHandler* eventHandler=new SelectionKeyEventHandler(&viewer,myInterSectionSelector);
+	 viewer.addEventHandler(eventHandler);
 
 	/*-----TESTS SUR LA SCENE*/
 	//Afficher l'arbre de la scène sur 3 niveaux dans la console
@@ -38,8 +51,7 @@ int main()
 
 	//-----PARTIE HABITUELLE OSG
 
-	osgViewer::Viewer viewer ;
-	osg::ref_ptr<osg::Group> root (new osg::Group);
+
 
 	root->addChild(cityGroup.get());
 	viewer.setSceneData( root.get() );
@@ -94,6 +106,7 @@ void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup){
 
 	for(unsigned int i=0;i<geodes.size();i++){
 		showMetadata(geodes[i]);
+
 	}
 }
 
