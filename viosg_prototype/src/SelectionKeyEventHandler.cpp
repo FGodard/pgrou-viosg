@@ -3,9 +3,11 @@
 typedef osgUtil::LineSegmentIntersector::Intersection Intersection;
 using namespace citygml;
 using namespace std;
+
 class IntersectionSelector
 {
 public:
+	IntersectionSelector(QLabel* _metadataLabel):metadataLabel(_metadataLabel){};
    virtual bool handle(Intersection &intersection)
    {
        osg::NodePath &nodes = intersection.nodePath;
@@ -18,18 +20,22 @@ public:
 			if(metadata)
 			{
 				AttributesMap::const_iterator iterator;
+				string data="";
 						for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
 						{
-							//On affiche le nom et la valeur
-							std::cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;
+							data=data+iterator->first+"\t"+iterator->second+"\n";
 						}
-						cout<<endl;
+						//cout<<endl;
+						const string dataf=data;
+				QString qstring=QString::fromStdString(dataf);
+						metadataLabel->setText(qstring);
 			}
 
        if (nodes.size()>0) return true;
        else return false;
    }
-
+protected:
+	QLabel* metadataLabel;
 
 };
 

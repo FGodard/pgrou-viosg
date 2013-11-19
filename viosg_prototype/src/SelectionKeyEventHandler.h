@@ -11,8 +11,11 @@
 #include <osgUtil/LineSegmentIntersector>
 #include <osgGA/GUIEventHandler>
 #include <osgViewer/Viewer>
+#include <QtGui>
 #include <iostream>
+
 #include "citygml.h"
 #include "Metadata.h"
+
 
 #endif /* SelectionKeyEventHandler */

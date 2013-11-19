@@ -1,18 +1,16 @@
 // base
-#include <osgViewer/Viewer>
-#include <osg/ShapeDrawable>
 
-// Keyboard input
-#include <osgViewer/ViewerEventHandlers>
-#include <osgGA/StateSetManipulator>
+
+#include <QApplication>
+#include <osgDB/ReadFile>
 
 //Chargement fichier
 #include "CityGmlReader.h"
 #include "GeodeFinder.h"
 
-//Selection des objets dans la scène
-#include "SelectionKeyEventHandler.h"
-#include "SelectionKeyEventHandler.cpp"
+
+//Interface
+#include "MainWindow.h"
 
 using namespace std;
 using namespace citygml;
@@ -21,46 +19,52 @@ using namespace citygml;
 void showCitySceneGraph(osg::ref_ptr<osg::Group> cityGroup);
 void showMetadata(osg::Object* object);
 void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup);
-
-int main()
+//TODO Essayer de la déplacer quelque part, fonction importante
+osg::Camera* createCamera( int x, int y, int w, int h )
 {
-	osgViewer::Viewer viewer ;
-	osg::ref_ptr<osg::Group> root (new osg::Group);
+    osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+    traits->windowDecoration = false;
+    traits->x = x;
+    traits->y = y;
+    traits->width = w;
+    traits->height = h;
+    traits->doubleBuffer = true;
+
+    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
+    camera->setGraphicsContext( new osgQt::GraphicsWindowQt(traits.get()) );
+    camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
+    camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
+    camera->setProjectionMatrixAsPerspective(
+        30.0f, static_cast<double>(traits->width)/static_cast<double>(traits->height), 1.0f, 10000.0f );
+    return camera.release();
+}
+
+int main(int argc, char** argv )
+{
+	//Initialition de QT App en premier
+	QApplication app( argc, argv );
 
 	/*-----FICHIER A CHARGER*/
 	//string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
 	string filePath="/home/blam/samples/1.citygml";
-
 
 	/*-----CHARGEMENT DU FICHIER CITYGML */
 	CityGmlReader cityGmlReader;
 	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
 
 
-	/*-----AJOUT EVENT HANDLER POUR LA SELECTION OBJETS*/
-	 IntersectionSelector* myInterSectionSelector=new IntersectionSelector();
-	 SelectionKeyEventHandler* eventHandler=new SelectionKeyEventHandler(&viewer,myInterSectionSelector);
-	 viewer.addEventHandler(eventHandler);
-
 	/*-----TESTS SUR LA SCENE*/
 	//Afficher l'arbre de la scène sur 3 niveaux dans la console
-	showCitySceneGraph(cityGroup);
+	//showCitySceneGraph(cityGroup);
 	//Récupérer toutes les géodes de la scène et afficher leurs métadonnées
-	showAllMetadata(cityGroup);
+	//showAllMetadata(cityGroup);
 
 
-	//-----PARTIE HABITUELLE OSG
-
-
-
-	root->addChild(cityGroup.get());
-	viewer.setSceneData( root.get() );
-
-	viewer.addEventHandler(new osgViewer::StatsHandler);
-	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
-	viewer.addEventHandler( new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()) );
-
-	return (viewer.run());
+	//Création de la fenêtre principale
+	 osg::Camera* camera = createCamera( 50, 50, 640, 480 );
+	 MainWindow mainWindow(cityGroup,camera);
+	 mainWindow.showMaximized();
+	return app.exec();
 }
 
 
