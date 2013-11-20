@@ -11,9 +11,8 @@ public:
    virtual bool handle(Intersection &intersection)
    {
        osg::NodePath &nodes = intersection.nodePath;
-//TODO Verifier que nodes.size-1 est bien la géode
-	cout<<"Objet trouvé:"<<nodes[nodes.size()-1]->getName()<<nodes[nodes.size()-1]->className()<<endl;
 
+       //TODO Verifier que nodes.size-1 est bien la géode
 		osg::ref_ptr<Metadata> metadata =
 					dynamic_cast<Metadata*> (nodes[nodes.size()-1]->getUserData() );
 
@@ -25,7 +24,7 @@ public:
 						{
 							data=data+iterator->first+"\t"+iterator->second+"\n";
 						}
-						//cout<<endl;
+
 						const string dataf=data;
 				QString qstring=QString::fromStdString(dataf);
 						metadataLabel->setText(qstring);
