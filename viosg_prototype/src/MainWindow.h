@@ -29,8 +29,8 @@ class ViewerWidget : public QWidget {
 public:
     ViewerWidget(osg::Node* scene,osg::Camera* camera, QLabel* metadataLabel);
 protected:
-    virtual void paintEvent( QPaintEvent* event )
-    { viewer.frame(); }
+    void paintEvent( QPaintEvent* event );
+
     osgViewer::Viewer viewer;
     QTimer timer;
 };

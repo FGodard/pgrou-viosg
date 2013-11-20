@@ -28,6 +28,8 @@ MainWindow::MainWindow(osg::Node* scene,osg::Camera* camera):metadataLabel(new Q
 	setCentralWidget(container);
 }
 
+
+
 void MainWindow::createMenu(){
 	 QMenu *menu = menuBar()->addMenu("&Menu");
 			 QAction *actionOpenFile = new QAction("&Open File", this);
@@ -60,6 +62,7 @@ QVBoxLayout* MainWindow::createRightLayout(){
 			   QVBoxLayout *rightLayout = new QVBoxLayout;
 			   return rightLayout;
 }
+
 ViewerWidget::ViewerWidget(osg::Node* scene, osg::Camera* camera, QLabel* testMetadata):QWidget(){
 
 	 	 	 viewer.setCamera(camera);
@@ -85,6 +88,9 @@ if ( gw )
         timer.start( 40 );
 }
 
+void ViewerWidget::paintEvent(QPaintEvent* event){
+	viewer.frame();
+}
 
 
 
