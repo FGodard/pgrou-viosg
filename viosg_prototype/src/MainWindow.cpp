@@ -9,23 +9,28 @@
 
 MainWindow::~MainWindow(){
 	delete metadataLabel;
+
 }
 
-MainWindow::MainWindow(osg::Node* scene,osg::Camera* camera):metadataLabel(new QLabel)
+MainWindow::MainWindow(osg::Camera* camera)
+:metadataLabel(new QLabel),root(new osg::Group)
 {
+
 	//Create Menu
 	createMenu();
 	QHBoxLayout *mainLayout=new QHBoxLayout;
 	mainLayout->addLayout(createLeftLayout());
 
 	//Create osgWidget for middleLayout;
-	ViewerWidget* osgWidget = new ViewerWidget(scene,camera,metadataLabel);
+	ViewerWidget* osgWidget = new ViewerWidget(root,camera,metadataLabel);
 	mainLayout->addLayout(createMiddleLayout(osgWidget));
 
 	mainLayout->addLayout(createRightLayout());
 	QWidget *container = new QWidget;
 	container->setLayout(mainLayout);
 	setCentralWidget(container);
+
+
 }
 
 
@@ -36,6 +41,8 @@ void MainWindow::createMenu(){
 			 QAction *actionQuit = new QAction("&Quit", this);
 			 menu->addAction(actionOpenFile);
 			 menu->addAction(actionQuit);
+
+			 connect(actionOpenFile, SIGNAL(triggered()), this, SLOT(openFile()));
 }
 
 QVBoxLayout* MainWindow::createLeftLayout(){
@@ -62,6 +69,15 @@ QVBoxLayout* MainWindow::createRightLayout(){
 			   QVBoxLayout *rightLayout = new QVBoxLayout;
 			   return rightLayout;
 }
+
+//Fonctions de l'interface
+void MainWindow::openFile(){
+	std::string filePath="/home/blam/samples/1.citygml";
+	CityGmlReader cityGmlReader;
+	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
+	root->addChild(cityGroup.get());
+}
+
 
 ViewerWidget::ViewerWidget(osg::Node* scene, osg::Camera* camera, QLabel* testMetadata):QWidget(){
 

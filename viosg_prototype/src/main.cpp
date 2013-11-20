@@ -46,11 +46,11 @@ int main(int argc, char** argv )
 
 	/*-----FICHIER A CHARGER*/
 	//string filePath="/home/blam/samples/Frankfurt_Street_Setting_LOD3/Frankfurt_Street_Setting_LOD3.citygml";
-	string filePath="/home/blam/samples/1.citygml";
+	//string filePath="/home/blam/samples/1.citygml";
 
 	/*-----CHARGEMENT DU FICHIER CITYGML */
-	CityGmlReader cityGmlReader;
-	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
+	//CityGmlReader cityGmlReader;
+	//osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
 
 
 	/*-----TESTS SUR LA SCENE*/
@@ -62,7 +62,7 @@ int main(int argc, char** argv )
 
 	//Création de la fenêtre principale
 	 osg::Camera* camera = createCamera( 50, 50, 640, 480 );
-	 MainWindow mainWindow(cityGroup,camera);
+	 MainWindow mainWindow(camera);
 	 mainWindow.showMaximized();
 	return app.exec();
 }

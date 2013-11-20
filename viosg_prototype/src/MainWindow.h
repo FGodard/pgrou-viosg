@@ -20,7 +20,7 @@
 
 //Selection des objets dans la scène
 #include "SelectionKeyEventHandler.h"
-
+#include "CityGmlReader.h"
 
 /**
  * QtWidget contenant la scène 3D OpenSceneGraph
@@ -37,10 +37,12 @@ protected:
 
 class MainWindow : public QMainWindow
 {
+//Q_OBJECT
 	public:
-	   MainWindow(osg::Node* scene,osg::Camera* camera);
+	   MainWindow(osg::Camera* camera);
 	   ~MainWindow();
 	protected:
+	   osg::ref_ptr<osg::Group> root;
 	   QLabel* metadataLabel;
 
 	private:
@@ -48,6 +50,10 @@ class MainWindow : public QMainWindow
 	   QVBoxLayout* createLeftLayout();
 	   QVBoxLayout* createMiddleLayout(ViewerWidget* osgWidget);
 	   QVBoxLayout* createRightLayout();
+
+	   //Actions de l'interface
+private slots:
+	   void openFile();
 };
 
 
