@@ -17,5 +17,21 @@
 #include "citygml.h"
 #include "Metadata.h"
 
+class IntersectionSelector{
+public:
+	IntersectionSelector(QLabel* _metadataLabel);
+	~IntersectionSelector();
+	bool handle(osgUtil::LineSegmentIntersector::Intersection &intersection);
+protected:
+	QLabel* metadataLabel;
+};
 
+class SelectionKeyEventHandler:public osgGA::GUIEventHandler{
+public:
+	SelectionKeyEventHandler(osgViewer::Viewer *node, IntersectionSelector *selector);
+	bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+protected:
+   osgViewer::Viewer *m_viewer;
+   IntersectionSelector *m_selector;
+};
 #endif /* SelectionKeyEventHandler */

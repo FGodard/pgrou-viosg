@@ -20,24 +20,36 @@
 
 //Selection des objets dans la scène
 #include "SelectionKeyEventHandler.h"
-#include "SelectionKeyEventHandler.cpp"
+
+
+/**
+ * QtWidget contenant la scène 3D OpenSceneGraph
+ */
+class ViewerWidget : public QWidget {
+public:
+    ViewerWidget(osg::Node* scene,osg::Camera* camera, QLabel* metadataLabel);
+protected:
+    virtual void paintEvent( QPaintEvent* event )
+    { viewer.frame(); }
+    osgViewer::Viewer viewer;
+    QTimer timer;
+};
 
 class MainWindow : public QMainWindow
 {
 	public:
 	   MainWindow(osg::Node* scene,osg::Camera* camera);
+	   ~MainWindow();
+	protected:
+	   QLabel* metadataLabel;
+
+	private:
+	   void createMenu();
+	   QVBoxLayout* createLeftLayout();
+	   QVBoxLayout* createMiddleLayout(ViewerWidget* osgWidget);
+	   QVBoxLayout* createRightLayout();
 };
 
-class ViewerWidget : public QWidget {
-public:
-    ViewerWidget(osg::Node* scene,osg::Camera* camera, QLabel* metadataLabel);
-   // osg::Camera* createCamera( int x, int y, int w, int h );
-protected:
-    virtual void paintEvent( QPaintEvent* event )
-    { viewer.frame(); }
 
-    osgViewer::Viewer viewer;
-    QTimer timer;
-};
 
 #endif /* MAINWINDOW_H_ */

@@ -7,38 +7,59 @@
 
 #include "MainWindow.h"
 
-MainWindow::MainWindow(osg::Node* scene,osg::Camera* camera)
-{
-	//Layout Left
-	 QVBoxLayout *leftLayout = new QVBoxLayout;
-	 QPushButton *test1openFile = new QPushButton;
-	 QPushButton *test2openFile = new QPushButton;
-	 QPushButton *test3openFile = new QPushButton;
-	 QLabel *testMetadata=new QLabel;
-	 leftLayout->addWidget(test1openFile);
-	 leftLayout->addWidget(test2openFile);
-	 leftLayout->addWidget(test3openFile);
-	 leftLayout->addWidget(testMetadata);
-
-	 	 	 //Layout Middle
-		   QVBoxLayout *middleLayout = new QVBoxLayout;
-		   ViewerWidget* osgWidget = new ViewerWidget(scene,camera,testMetadata);
-		   middleLayout->addWidget(osgWidget);
-
-		   //Layout Right
-		   QVBoxLayout *rightLayout = new QVBoxLayout;
-
-		   //Main Layout
-		   QHBoxLayout *mainLayout=new QHBoxLayout;
-		   mainLayout->addLayout(leftLayout);
-		   mainLayout->addLayout(middleLayout);
-		   mainLayout->addLayout(rightLayout);
-
-		   	QWidget *container = new QWidget;
-		   	      container->setLayout(mainLayout);
-		   	      setCentralWidget(container);
+MainWindow::~MainWindow(){
+	delete metadataLabel;
 }
 
+MainWindow::MainWindow(osg::Node* scene,osg::Camera* camera):metadataLabel(new QLabel)
+{
+	//Create Menu
+	createMenu();
+	QHBoxLayout *mainLayout=new QHBoxLayout;
+	mainLayout->addLayout(createLeftLayout());
+
+	//Create osgWidget for middleLayout;
+	ViewerWidget* osgWidget = new ViewerWidget(scene,camera,metadataLabel);
+	mainLayout->addLayout(createMiddleLayout(osgWidget));
+
+	mainLayout->addLayout(createRightLayout());
+	QWidget *container = new QWidget;
+	container->setLayout(mainLayout);
+	setCentralWidget(container);
+}
+
+void MainWindow::createMenu(){
+	 QMenu *menu = menuBar()->addMenu("&Menu");
+			 QAction *actionOpenFile = new QAction("&Open File", this);
+			 QAction *actionQuit = new QAction("&Quit", this);
+			 menu->addAction(actionOpenFile);
+			 menu->addAction(actionQuit);
+}
+
+QVBoxLayout* MainWindow::createLeftLayout(){
+	//Layout Left
+		 QVBoxLayout *leftLayout = new QVBoxLayout;
+		 QPushButton *test1openFile = new QPushButton;
+		 QPushButton *test2openFile = new QPushButton;
+		 QPushButton *test3openFile = new QPushButton;
+
+		 leftLayout->addWidget(test1openFile);
+		 leftLayout->addWidget(test2openFile);
+		 leftLayout->addWidget(test3openFile);
+		 leftLayout->addWidget(metadataLabel);
+		 return leftLayout;
+}
+
+QVBoxLayout* MainWindow::createMiddleLayout(ViewerWidget *osgWidget){
+	  QVBoxLayout *middleLayout = new QVBoxLayout;
+			   middleLayout->addWidget(osgWidget);
+			   return middleLayout;
+}
+
+QVBoxLayout* MainWindow::createRightLayout(){
+			   QVBoxLayout *rightLayout = new QVBoxLayout;
+			   return rightLayout;
+}
 ViewerWidget::ViewerWidget(osg::Node* scene, osg::Camera* camera, QLabel* testMetadata):QWidget(){
 
 	 	 	 viewer.setCamera(camera);

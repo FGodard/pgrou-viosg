@@ -20,7 +20,6 @@
 class Metadata :public osg::Referenced {
 public:
 	Metadata(const citygml::AttributesMap& _attributes):attributes(_attributes){};
-
 	//Hashmap contenant les métadonnéees
 	const citygml::AttributesMap& attributes;
 };
