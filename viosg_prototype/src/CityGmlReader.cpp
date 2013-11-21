@@ -109,8 +109,8 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
 	parent->addChild( geode )
 #endif
 
-			// Creer le contenu graphique de la géode
-			createCityObjectDrawable(object,geode);
+	// Creer le contenu graphique de la géode
+	createCityObjectDrawable(object,geode);
 
 	//Ajout des métadonnées à la géode
 	fetchCityObjectMetadata(object,geode);
@@ -160,7 +160,10 @@ void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, 
 			// Geometry management
 			createCityObjectDrawableGeometry(p,geom);
 			// Material Management
+
+#ifdef COLOR
 			createCityObjectDrawableMaterial(object,p,geom,geometry);
+#endif
 			//Gérer la transparence si l'objet est une fenêtre
 			manageTransparencyifWindows(object,geode);
 			//Add geometry to the geode

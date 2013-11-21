@@ -14,7 +14,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.exe.release.1641352239" name="Release" parent="cdt.managedbuild.config.gnu.exe.release" preannouncebuildStep="Qt Moc" prebuildStep="find . -name &quot;.h&quot; | sed 's/(.)(/)(.*)(.h)/moc-qt4 -D &amp; -o \1\2moc_\3.cpp/' | sh">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.exe.release.1641352239" name="Release" parent="cdt.managedbuild.config.gnu.exe.release" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.release.1641352239." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.1072300022" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.release.2018879414" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.release"/>
@@ -28,10 +28,6 @@
 									<listOptionValue builtIn="false" value="/usr/include/osg"/>
 									<listOptionValue builtIn="false" value="/usr/include/X11"/>
 									<listOptionValue builtIn="false" value="/usr/include/GL"/>
-									<listOptionValue builtIn="false" value="/usr/include/qt4/Qt"/>
-									<listOptionValue builtIn="false" value="/usr/include/qt4"/>
-									<listOptionValue builtIn="false" value="/usr/include/qt4/QtGui"/>
-									<listOptionValue builtIn="false" value="/usr/include/qt4/QtCore"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.691014859" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -50,9 +46,6 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="OpenThreads"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="citygml"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="osgUtil"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="QtGui"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="QtCore"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="osgQt"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.290663587" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/lib"/>
@@ -85,5 +78,9 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/viosg_prototype"/>
+		</configuration>
+	</storageModule>
 </cproject>
