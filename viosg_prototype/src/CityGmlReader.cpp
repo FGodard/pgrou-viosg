@@ -161,9 +161,8 @@ void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, 
 			createCityObjectDrawableGeometry(p,geom);
 			// Material Management
 
-#ifdef COLOR
-			createCityObjectDrawableMaterial(object,p,geom,geometry);
-#endif
+			//createCityObjectDrawableMaterial(object,p,geom,geometry);
+
 			//Gérer la transparence si l'objet est une fenêtre
 			manageTransparencyifWindows(object,geode);
 			//Add geometry to the geode
@@ -313,8 +312,8 @@ void CityGmlReader::createCityObjectDrawableMaterial(const citygml::CityObject* 
 		}
 	}
 	// Color management
-	geom->setColorArray( ( !colorset && geometry.getType() == citygml::GT_Roof ) ? roof_color.get() : shared_colors.get() );
-	geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+	//geom->setColorArray( ( !colorset && geometry.getType() == citygml::GT_Roof ) ? roof_color.get() : shared_colors.get() );
+	//geom->setColorBinding( osg::Geometry::BIND_OVERALL );
 #if 0
 	// Set lighting model to two sided
 	osg::ref_ptr< osg::LightModel > lightModel = new osg::LightModel;

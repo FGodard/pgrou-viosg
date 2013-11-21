@@ -19,7 +19,9 @@ using namespace citygml;
 
 void showMetadata(osg::Object* object);
 void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup);
-
+void colorBuildings(osg::ref_ptr<osg::Group> cityGroup);
+std::string yearOfConstruction(osg::Object* osgObject);
+std::string measuredHeight(osg::Object* osgObject);
 
 int main(int argc, char** argv )
 {
@@ -45,7 +47,8 @@ int main(int argc, char** argv )
 
 	/*-----TESTS SUR LA SCENE*/
 		//Récupérer toutes les géodes de la scène et afficher leurs métadonnées
-		//showAllMetadata(cityGroup);
+		showAllMetadata(cityGroup);
+		colorBuildings(cityGroup);
 	return viewer.run();
 }
 
@@ -95,6 +98,82 @@ void showAllMetadata(osg::ref_ptr<osg::Group> cityGroup){
 
 	}
 }
+
+void colorBuildings(osg::ref_ptr<osg::Group> cityGroup){
+GeodeFinder geodeFinder;
+	cityGroup->accept(geodeFinder);
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+	static const char* fragSource =
+	"uniform vec4 color;"
+	"void main()"
+	"{"
+	" gl_FragColor = color;"
+	"}";
+
+	osg::ref_ptr<osg::Shader> f = new osg::Shader( osg::Shader::FRAGMENT );
+	f->setShaderSource( fragSource );
+
+	osg::ref_ptr<osg::Program> rPrg = new osg::Program;
+	rPrg->setName( "myShader" );
+	rPrg->addShader( f.get() );
+
+	//on met en couleur bleu clair les batiments de taille 70 et construits en 1989
+	//on met en rouge ceux de taille 70 et construits en 1999
+for(unsigned int i=0;i<geodes.size();i++){
+	std::string test2=measuredHeight(geodes[i]);
+	if(test2.compare("70") == 0){
+	std::string test=yearOfConstruction(geodes[i]);
+		if(test.compare("1989") == 0){
+			geodes[i]->getOrCreateStateSet()->setAttributeAndModes( rPrg.get(), osg::StateAttribute::ON );
+               geodes[i]->getOrCreateStateSet()->addUniform( new osg::Uniform("color",osg::Vec4(0.0,191.0,255.0,1.0)));
+}
+		if(test.compare("1999") == 0){
+					geodes[i]->getOrCreateStateSet()->setAttributeAndModes( rPrg.get(), osg::StateAttribute::ON );
+		               geodes[i]->getOrCreateStateSet()->addUniform( new osg::Uniform("color",osg::Vec4(1.0,0.0,0.0,1.0)));
+		}
+	}}
+
+}
+
+
+std::string measuredHeight(osg::Object* osgObject){
+	osg::ref_ptr<Metadata> metadata =
+				dynamic_cast<Metadata*> (osgObject->getUserData());
+
+		if(metadata)
+		{
+			AttributesMap::const_iterator iterator;
+			for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+			{
+				std::string test=iterator->first;
+				std::string test2=iterator->second;
+				if (test.compare("measuredHeight")==0)
+					return test2;
+			}
+
+		}
+}
+
+std::string yearOfConstruction(osg::Object* osgObject){
+	osg::ref_ptr<Metadata> metadata =
+			dynamic_cast<Metadata*> (osgObject->getUserData());
+
+	if(metadata)
+	{
+		AttributesMap::const_iterator iterator;
+		for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+		{
+			std::string test=iterator->first;
+			std::string test2=iterator->second;
+			if (test.compare("yearOfConstruction")==0)
+				return test2;
+		}
+
+	}
+
+}
+
 
 
 
