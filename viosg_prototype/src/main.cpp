@@ -27,11 +27,12 @@ int main(int argc, char** argv )
 	//CHARGEMENT FICHIER
 	CityGmlReader cityGmlReader;
 	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
-	cityGroup->setDataVariance(osg::Object::DYNAMIC);
-
+	osg::ref_ptr<osg::Group> root(new osg::Group);
+	root->addChild(cityGroup);
+	root->setDataVariance(osg::Object::DYNAMIC);
 	//CREATION DU VIEWER
 	osgViewer::Viewer viewer ;
-	viewer.setSceneData(cityGroup);
+	viewer.setSceneData(root);
 	viewer.addEventHandler(new PickObjectHandler(&viewer));
 	viewer.setCameraManipulator(new osgGA::TrackballManipulator);
 	viewer.addEventHandler( new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()) );
@@ -39,7 +40,7 @@ int main(int argc, char** argv )
 
 	//RENDER THREAD ET UI THREAD
 	UiThread::instance()->startThread();
-	UserCommands userCommands(cityGroup);
+	UserCommands userCommands(root);
 	string command;
 	viewer.realize();
 
@@ -50,7 +51,7 @@ int main(int argc, char** argv )
 		viewer.frame();
 	}
 
-	//FIXME Hotfix pour empecher une fuite mémoire thread: à améliorer
+	//FIXME Hotfix pour empecher une appel blocant thread ui: à améliorer
 	cout<<"!!IMPORTANT!!:Presser Entrée dans le terminal pour fermer le programme"<<endl;
 	UiThread::instance()->cancel();
 

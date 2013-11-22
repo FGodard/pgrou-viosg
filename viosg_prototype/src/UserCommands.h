@@ -18,10 +18,10 @@
 
 class UserCommands {
 public:
-	UserCommands(osg::ref_ptr<osg::Group> cityGroup);
+	UserCommands(osg::ref_ptr<osg::Group> root);
 	void executeCommand(std::string command);
 private:
-	osg::ref_ptr<osg::Group> cityGroup;
+	osg::ref_ptr<osg::Group> root;
 	void showHelp();
 
 	void showAllMetadata();

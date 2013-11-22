@@ -8,8 +8,8 @@
 #include "UserCommands.h"
 using namespace std;
 
-UserCommands::UserCommands(osg::ref_ptr<osg::Group> cityGroup){
-	UserCommands::cityGroup=cityGroup;
+UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
+	UserCommands::root=root;
 }
 
 /**
@@ -39,7 +39,7 @@ void UserCommands::showAllMetadata(){
 	cout<<endl<<"AFFICHAGE DES METADONNEES"<<endl;
 	GeodeFinder geodeFinder;
 
-	cityGroup->accept(geodeFinder);
+	root->accept(geodeFinder);
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
 	for(unsigned int i=0;i<geodes.size();i++){
