@@ -11,7 +11,6 @@ using namespace std;
 int UiThread::cancel()
 {
   threadDone = true;
-  //FIXME : Uithread stays open beacause of blocking call getLine(cin,command)
   while( isRunning() ) YieldCurrentThread();
 
   return 0;
@@ -26,6 +25,7 @@ void UiThread::run()
   {
     YieldCurrentThread();
     string userInput;
+    //FixME Blocking Call in UiThread, memory leak
     getline(cin,userInput);
     setNewCommand(userInput);
   } while( !threadDone );

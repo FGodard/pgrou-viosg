@@ -42,14 +42,18 @@ int main(int argc, char** argv )
 	UserCommands userCommands(cityGroup);
 	string command;
 	viewer.realize();
+
 	while(!viewer.done()){
-		//Update Scene if command input
 		if( UiThread::instance()->copyNewCommandTo(command)) {
 		userCommands.executeCommand(command);
 		}
 		viewer.frame();
 	}
+
+	//FIXME Hotfix pour empecher une fuite mémoire thread: à améliorer
+	cout<<"!!IMPORTANT!!:Presser Entrée dans le terminal pour fermer le programme"<<endl;
 	UiThread::instance()->cancel();
+
 	cout<<"Exiting program"<<endl;
 	return 0;
 }

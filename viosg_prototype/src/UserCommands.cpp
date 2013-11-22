@@ -12,11 +12,13 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> cityGroup){
 	UserCommands::cityGroup=cityGroup;
 }
 
-
+/**
+ * Execute la commande entrée dans le terminal
+ */
 void UserCommands::executeCommand(string command){
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
-	//Aucune commande trouvée
+	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
 
