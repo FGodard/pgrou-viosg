@@ -27,6 +27,9 @@ private:
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
 
+	void colorBuildings1989();
+	std::string yearOfConstruction(osg::Object* object);
+
 };
 
 #endif /* USERCOMMANDS_H_ */
