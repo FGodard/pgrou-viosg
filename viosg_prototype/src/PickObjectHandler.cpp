@@ -1,4 +1,4 @@
-#include "KeyEventHandler.h"
+#include "PickObjectHandler.h"
 
 typedef osgUtil::LineSegmentIntersector::Intersection Intersection;
 using namespace citygml;
@@ -29,14 +29,14 @@ bool IntersectionSelector::handle(Intersection &intersection)
 }
 
 
-KeyEventHandler::KeyEventHandler(osgViewer::Viewer *node)
+PickObjectHandler::PickObjectHandler(osgViewer::Viewer *node)
 : osgGA::GUIEventHandler()
 {
 	m_viewer = node;
 	m_selector = new IntersectionSelector();
 }
 
-bool KeyEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
+bool PickObjectHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
 	switch (ea.getEventType()){
 	case(osgGA::GUIEventAdapter::KEYDOWN):
