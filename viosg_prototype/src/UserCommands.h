@@ -27,8 +27,8 @@ private:
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
 
-	void colorBuildings1989();
-	std::string yearOfConstruction(osg::Object* object);
+	void legendKeyValue(std::string key, std::string value);
+	std::string legendKey(osg::Object* object, std::string key);
 
 };
 

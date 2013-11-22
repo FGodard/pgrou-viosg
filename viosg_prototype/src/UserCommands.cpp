@@ -18,7 +18,12 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 void UserCommands::executeCommand(string command){
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
-	if(command.compare("colorBuildings1989")==0) {colorBuildings1989();return;}
+	if(command.compare("colorBuildings1989")==0) {legendKeyValue("yearOfConstruction","1989");return;}
+	if(command.compare("measuredHeight70")==0) {legendKeyValue("measuredHeight","70");return;}
+	if(command.compare("date")==0) {legendKeyValue("creationDate","2013-02-04");return;}
+	if(command.compare("asphalte")==0) {legendKeyValue("name","ASPHALTE");return;}
+	if(command.compare("function2700")==0) {legendKeyValue("function","2700");return;}
+
 	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
@@ -69,7 +74,7 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 	}
 }
 
-void UserCommands::colorBuildings1989(){
+void UserCommands::legendKeyValue(std::string key,std::string value){
 GeodeFinder geodeFinder;
 root->accept(geodeFinder);
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
@@ -88,10 +93,9 @@ root->accept(geodeFinder);
 	rPrg->setName( "myShader" );
 	rPrg->addShader( f.get() );
 
-	//on met en couleur bleu clair les batiments construits en 1989
 for(unsigned int i=0;i<geodes.size();i++){
-	std::string test=yearOfConstruction(geodes[i]);
-		if(test.compare("1989") == 0){
+	std::string test=legendKey(geodes[i],key);
+		if(test.compare(value) == 0){
 			geodes[i]->getOrCreateStateSet()->setAttributeAndModes( rPrg.get(), osg::StateAttribute::ON );
                geodes[i]->getOrCreateStateSet()->addUniform( new osg::Uniform("color",osg::Vec4(0.0,191.0,255.0,1.0)));
 		}
@@ -99,9 +103,7 @@ for(unsigned int i=0;i<geodes.size();i++){
 
 }
 
-
-
-std::string UserCommands::yearOfConstruction(osg::Object* osgObject){
+std::string UserCommands::legendKey(osg::Object* osgObject, std::string key){
 	osg::ref_ptr<Metadata> metadata =
 			dynamic_cast<Metadata*> (osgObject->getUserData());
 
@@ -112,12 +114,11 @@ std::string UserCommands::yearOfConstruction(osg::Object* osgObject){
 		{
 			std::string test=iterator->first;
 			std::string test2=iterator->second;
-			if (test.compare("yearOfConstruction")==0)
+			if (test.compare(key)==0)
 				return test2;
 		}
 
 	}
-
 }
 
 
