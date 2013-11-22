@@ -99,6 +99,9 @@ for(unsigned int i=0;i<geodes.size();i++){
 			geodes[i]->getOrCreateStateSet()->setAttributeAndModes( rPrg.get(), osg::StateAttribute::ON );
                geodes[i]->getOrCreateStateSet()->addUniform( new osg::Uniform("color",osg::Vec4(0.0,191.0,255.0,1.0)));
 		}
+		else{
+               geodes[i]->getOrCreateStateSet()->addUniform( new osg::Uniform("color",osg::Vec4(139.0,139.0,131.0,1.0)));
+		}
 	}
 
 }
