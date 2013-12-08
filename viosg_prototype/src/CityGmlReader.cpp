@@ -159,13 +159,14 @@ void CityGmlReader::createCityObjectDrawable(const citygml::CityObject* object, 
 
 			// Geometry management
 			createCityObjectDrawableGeometry(p,geom);
-			// Material Management
 
+//Le modèle est crée sans couleurs pour pouvoir afficher les légendes
 #ifdef COLOR
+			// Material Management
 			createCityObjectDrawableMaterial(object,p,geom,geometry);
-#endif
 			//Gérer la transparence si l'objet est une fenêtre
 			manageTransparencyifWindows(object,geode);
+#endif
 			//Add geometry to the geode
 			geode->addDrawable(geom);
 		}

@@ -37,6 +37,7 @@ int main(int argc, char** argv )
 	externalDataLoader.loadData(filePath);
 	root->addChild(externalDataGroup);
 
+/*
 
 	//CREATION DU VIEWER
 	osgViewer::Viewer viewer ;
@@ -62,7 +63,11 @@ int main(int argc, char** argv )
 	cout<<"Fenêtre graphique fermée, appuyer sur Entrée pour terminer le programme"<<endl;
 
 	UiThread::instance()->cancel();
+
+
+	*/
 	cout<<"Exiting program"<<endl;
+
 	return 0;
 }
 

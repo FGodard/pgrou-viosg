@@ -28,6 +28,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/osg"/>
 									<listOptionValue builtIn="false" value="/usr/include/X11"/>
 									<listOptionValue builtIn="false" value="/usr/include/GL"/>
+									<listOptionValue builtIn="false" value="/usr/include/libxml2"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.691014859" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -46,6 +47,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="OpenThreads"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="citygml"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="osgUtil"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="xml2"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.290663587" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/lib"/>
