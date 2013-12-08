@@ -26,7 +26,7 @@ private:
 
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
-
+	void showOneMetadata(osg::Object* object);
 };
 
 #endif /* USERCOMMANDS_H_ */

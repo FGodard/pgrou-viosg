@@ -25,7 +25,6 @@ void UiThread::run()
   {
     YieldCurrentThread();
     string userInput;
-    //FixME Blocking Call in UiThread, memory leak
     getline(cin,userInput);
     setNewCommand(userInput);
   } while( !threadDone );

@@ -43,7 +43,8 @@ void UserCommands::showAllMetadata(){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
 	for(unsigned int i=0;i<geodes.size();i++){
-		showMetadata(geodes[i]);
+		//showMetadata(geodes[i]);
+		showOneMetadata(geodes[i]);
 	}
 }
 
@@ -66,6 +67,20 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 		}
 		cout<<endl;
 	}
+}
+
+void UserCommands::showOneMetadata(osg::Object* osgObject){
+	//On récupère le userdata de l'object
+		osg::ref_ptr<Metadata> metadata =
+				dynamic_cast<Metadata*> (osgObject->getUserData() );
+
+		if(metadata)
+		{
+			citygml::AttributesMap::const_iterator iterator=metadata->attributes.find("measuredHeight");
+			if(iterator!=metadata->attributes.end()){//il a trouvé l'attribut
+			cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;
+			}
+		}
 }
 
 
