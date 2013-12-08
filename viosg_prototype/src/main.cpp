@@ -6,12 +6,10 @@
 #include "PickObjectHandler.h"
 #include "UiThread.h"
 #include "UserCommands.h"
+#include "ExternalDataLoader.h"
 
 using namespace std;
 using namespace citygml;
-
-
-
 
 int main(int argc, char** argv )
 {
@@ -33,7 +31,11 @@ int main(int argc, char** argv )
 	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
 	root->addChild(cityGroup);
 
-	//TODO Chargement des nouvelles données ici
+	//CHARGEMENT DES DONNEES EXTERNES
+	osg::ref_ptr<osg::Group> externalDataGroup(new osg::Group);
+	ExternalDataLoader externalDataLoader(externalDataGroup);
+	externalDataLoader.loadData(filePath);
+	root->addChild(externalDataGroup);
 
 
 	//CREATION DU VIEWER
