@@ -27,6 +27,7 @@ void UserCommands::showHelp(){
 cout<<"Commands List:"<<endl;
 cout<<"\t"<<"'help'"<<"\t"<<"Show commands list"<<endl;
 cout<<"\t"<<"'showAll'"<<"\t"<<"Show all metadata stored on all geodes"<<endl;
+cout<<"Pointez dans le Viewer3D un objet et appuyez sur espace pour récupérer les métadonnées contenues"<<endl;
 }
 
 
