@@ -44,8 +44,8 @@ void UserCommands::showAllMetadata(){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
 	for(unsigned int i=0;i<geodes.size();i++){
-		//showMetadata(geodes[i]);
-		showOneMetadata(geodes[i]);
+		showMetadata(geodes[i]);
+		//showOneMetadata(geodes[i]);
 	}
 }
 
