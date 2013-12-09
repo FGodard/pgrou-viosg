@@ -9,8 +9,14 @@
 #define USERCOMMANDS_H_
 
 #include <osg/Group>
+#include <osg/Projection>
+#include <osg/MatrixTransform>
+#include <osgText/Text>
+#include <osgText/TextBase>
 #include <string>
 #include <iostream>
+#include <osgUtil/Tessellator>
+#include <osg/LineWidth>
 
 #include "Metadata.h"
 #include "GeodeFinder.h"
@@ -26,6 +32,7 @@ private:
 
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
+	void showLegend();
 
 };
 
