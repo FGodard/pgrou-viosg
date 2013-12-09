@@ -191,7 +191,7 @@ void UserCommands::showLegend(){
 
 	//Create random texts and place them in the HUD
 	osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 6; ++i) {
 		textGeode->addDrawable(createText(osg::Vec3(rand() % 100, rand() % 100, 0.0f), "Test", 20.0f));
 		//textGeode->addDrawable(createLegendPolygon());
 	}
