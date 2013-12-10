@@ -33,6 +33,7 @@ private:
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
 	void showLegend();
+	void hideLegend();
 
 };
 

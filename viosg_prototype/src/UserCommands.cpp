@@ -19,6 +19,7 @@ void UserCommands::executeCommand(string command){
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
 	if(command.compare("showLegend")==0) {showLegend();return;}
+	if(command.compare("hideLegend")==0) {hideLegend();return;}
 	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
@@ -29,6 +30,7 @@ cout<<"Commands List:"<<endl;
 cout<<"\t"<<"'help'"<<"\t"<<"Show commands list."<<endl;
 cout<<"\t"<<"'showAll'"<<"\t"<<"Show all metadata stored on all geodes."<<endl;
 cout<<"\t"<<"'showLegend'"<<"\t"<<"Displays the legend."<<endl;
+cout<<"\t"<<"'hideLegend'"<<"\t"<<"Hides the legend."<<endl;
 }
 
 
@@ -70,7 +72,7 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 	}
 }
 
-osg::ref_ptr<osgText::Font> g_font = osgText::readFontFile("fonts/arial.ttf");
+osg::ref_ptr<osgText::Font> g_font = osgText::readFontFile("/usr/share/fonts/truetype/freefont/FreeSans.ttf");
 osgText::Text* createText( const osg::Vec3& pos, const std::string& content, float size )
 {
 	osg::ref_ptr<osgText::Text> text = new osgText::Text;
@@ -83,30 +85,45 @@ osgText::Text* createText( const osg::Vec3& pos, const std::string& content, flo
 	return text.release();
 }
 
-osg::Drawable* createLegendPolygon() {
-	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array(8);
-	(*vertices)[0].set( 0.0f, 0.0f, 0.0f );
-	(*vertices)[1].set( 3.0f, 0.0f, 0.0f );
-	(*vertices)[2].set( 3.0f, 0.0f, 3.0f );
-	(*vertices)[3].set( 0.0f, 0.0f, 3.0f );
-	(*vertices)[4].set( 1.0f, 0.0f, 1.0f );
-	(*vertices)[5].set( 2.0f, 0.0f, 1.0f );
-	(*vertices)[6].set( 2.0f, 0.0f, 2.0f );
-	(*vertices)[7].set( 1.0f, 0.0f, 2.0f );
+osg::Drawable* createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, osg::Image* image=NULL)
+{
+    // set up the Geometry.
+    osg::Geometry* geom = new osg::Geometry;
 
-	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array(1);
-	(*colors)[0].set( 1.0f, 1.0f, 0.0f, 1.0f );
-	osg::ref_ptr<osg::Geometry> border = new osg::Geometry;
-	border->setVertexArray( vertices.get() );
-	border->setColorArray( colors.get() );
-	border->setColorBinding( osg::Geometry::BIND_OVERALL );
-	border->addPrimitiveSet( new osg::DrawArrays(
-	GL_LINE_LOOP, 0, 4) );
-	border->addPrimitiveSet( new osg::DrawArrays(
-	GL_LINE_LOOP, 4, 4) );
-	border->getOrCreateStateSet()->setAttribute(new osg::LineWidth(5.0f) );
+    osg::Vec3Array* coords = new osg::Vec3Array(4);
+    (*coords)[0] = corner;
+    (*coords)[1] = corner+width;
+    (*coords)[2] = corner+width+height;
+    (*coords)[3] = corner+height;
 
-	return border.get();
+
+    geom->setVertexArray(coords);
+
+    osg::Vec3Array* norms = new osg::Vec3Array(1);
+    (*norms)[0] = width^height;
+    (*norms)[0].normalize();
+
+    geom->setNormalArray(norms);
+
+    osg::Vec2Array* tcoords = new osg::Vec2Array(4);
+    (*tcoords)[0].set(0.0f,0.0f);
+    (*tcoords)[1].set(1.0f,0.0f);
+    (*tcoords)[2].set(1.0f,1.0f);
+    (*tcoords)[3].set(0.0f,1.0f);
+    geom->setTexCoordArray(0,tcoords);
+
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+
+    if (image)
+    {
+        osg::StateSet* stateset = new osg::StateSet;
+        osg::Texture2D* texture = new osg::Texture2D;
+        texture->setImage(image);
+        stateset->setTextureAttributeAndModes(0,texture,osg::StateAttribute::ON);
+        geom->setStateSet(stateset);
+    }
+
+    return geom;
 }
 
 osg::Camera* createHUDCamera() {
@@ -189,16 +206,21 @@ osg::Camera* createHUDCamera() {
  */
 void UserCommands::showLegend(){
 
-	//Create random texts and place them in the HUD
+	//Creates colored figures and a text legend and places them in the HUD
 	osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
-	for (int i = 0; i < 6; ++i) {
-		textGeode->addDrawable(createText(osg::Vec3(rand() % 100, rand() % 100, 0.0f), "Test", 20.0f));
-		//textGeode->addDrawable(createLegendPolygon());
+	textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f));
+	for (int i = 0; i < 15; ++i) {
+		int b = 165 - 50*(i%4);
+		int a = 35 + 60*(i-i%4);
+		textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), "Test", 20.0f));
+		textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f)));
 	}
 
 	osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
 	hudCamera->addChild( textGeode.get() );
 	root->addChild(hudCamera);
 
+}
 
+void UserCommands::hideLegend() {
 }
