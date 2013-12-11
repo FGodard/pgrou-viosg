@@ -80,9 +80,9 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 }
 
 osg::ref_ptr<osgText::Font> g_font = osgText::readFontFile("/usr/share/fonts/truetype/freefont/FreeSans.ttf");
-osg::ref_ptr<osgText::Text> UserCommands::createText( const osg::Vec3& pos, const std::string& content, float size )
+osgText::Text* UserCommands::createText( const osg::Vec3& pos, const std::string& content, float size )
 {
-	osg::ref_ptr<osgText::Text> text = new osgText::Text;
+	osgText::Text* text = new osgText::Text;
 	text->setDataVariance( osg::Object::DYNAMIC );
 	text->setFont( g_font.get() );
 	text->setCharacterSize( size );
@@ -223,15 +223,19 @@ void UserCommands::showLegend(){
 	if (hudIndex == NULL) {
 		//Creates colored figures and a text legend and places them in the HUD
 		osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
-		textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f).get());
-		for (int i = 0; i < 8; i++) {
+		//TODO Bug incompréhensible d'affichage, il faut en créer deux
+		textGeode->addDrawable(createText(osg::Vec3(20, 140, 0.0f), "Affichage des tests", 30.0f));
+		textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f));
+		for (int i = 0; i < 13; i++) {
 			//Coordonnée verticale
 			int b = 165 - 50*(i%4);
 			//Coordonnée horizontale
 			int a = 35 + 60*(i-i%4);
-			textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), "Test", 20.0f).get());
 			textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), osg::Vec4(100, 100, 100, 1)));
+			textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), "Test", 20.0f));
+
 		}
+
 
 
 		osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();

@@ -30,7 +30,7 @@ private:
 	int hudIndex;
 	osg::ref_ptr<osg::Group> root;
 	void showHelp();
-	osg::ref_ptr<osgText::Text> createText( const osg::Vec3& pos, const std::string& content, float size ) ;
+	osgText::Text* createText( const osg::Vec3& pos, const std::string& content, float size ) ;
 	osg::Drawable* createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, const osg::Vec4& color, osg::Image* image);
 	osg::Camera* createHUDCamera();
 
