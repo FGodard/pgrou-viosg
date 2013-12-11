@@ -17,6 +17,7 @@
 #include <iostream>
 #include <osgUtil/Tessellator>
 #include <osg/LineWidth>
+#include <osg/Uniform>
 
 #include "Metadata.h"
 #include "GeodeFinder.h"

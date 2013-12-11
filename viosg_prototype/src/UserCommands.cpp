@@ -145,8 +145,11 @@ osg::Drawable* UserCommands::createLegendPolygon(const osg::Vec3& corner,const o
         stateset->setTextureAttributeAndModes(0,texture,osg::StateAttribute::ON);
         geom->setStateSet(stateset);
     }
-    geom->getStateSet()->addUniform(new osg::Uniform("color",osg::Vec4(0.0,191.0,255.0,1.0));
 
+	osg::Vec4Array* colors = new osg::Vec4Array;
+	colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f) );
+	geom->setColorArray(colors);
+	geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
     return geom;
 }
 
