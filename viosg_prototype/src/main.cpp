@@ -7,11 +7,27 @@
 #include "UiThread.h"
 #include "UserCommands.h"
 
+
+#include <fstream>
+using std::ifstream;
+
 using namespace std;
 using namespace citygml;
 
 
 
+bool is_readable( const std::string & file )
+{
+	string ext;
+	string::size_type pos;
+	pos=file.find_last_of( '.' );
+	 if (pos != string::npos)
+	       {
+	          ext = file.substr( pos );
+	       }
+    std::ifstream fichier( file.c_str() );
+    return (!fichier.fail() && (ext==".gml") );
+}
 
 int main(int argc, char** argv )
 {
@@ -19,17 +35,18 @@ int main(int argc, char** argv )
 	//VERIFICATION ARGC/ARGV
 	//TODO Faire la gestion du nom de fichier et arguments et aide
 	if (argc!=2){
-		cout<<"Mettre le chemin absolu ou relatif du fichier en argument!"<<endl;
+		cout<<"enter absolute or relative file path as an argument !!"<<endl;
 		return 0;
 	}
 	string filePath=argv[1];
-
+	if (is_readable(filePath)){
 	//CHARGEMENT FICHIER
 	CityGmlReader cityGmlReader;
 	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
 	osg::ref_ptr<osg::Group> root(new osg::Group);
 	root->addChild(cityGroup);
 	root->setDataVariance(osg::Object::DYNAMIC);
+
 	//CREATION DU VIEWER
 	osgViewer::Viewer viewer ;
 	viewer.setSceneData(root);
@@ -52,10 +69,15 @@ int main(int argc, char** argv )
 	}
 
 	//FIXME Hotfix pour empecher une appel blocant thread ui: à améliorer
-	cout<<"!!IMPORTANT!!:Presser Entrée dans le terminal pour fermer le programme"<<endl;
+	cout<<"!!IMPORTANT!!:Presser Entrée to close the program"<<endl;
 	UiThread::instance()->cancel();
 
 	cout<<"Exiting program"<<endl;
+
+}
+	else
+		cout<<"File does not exist!"<<endl;
+
 	return 0;
 }
 

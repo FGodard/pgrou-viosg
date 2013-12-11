@@ -23,10 +23,11 @@ public:
 private:
 	osg::ref_ptr<osg::Group> root;
 	void showHelp();
-
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
-
+	vector<string>readCommand(string command);
+	void printOneMetadata(osg::Object* object, std::string meta);
+	void printAMetadata(std::string meta);
 };
 
 #endif /* USERCOMMANDS_H_ */
