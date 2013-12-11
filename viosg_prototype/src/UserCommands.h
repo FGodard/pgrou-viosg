@@ -26,9 +26,11 @@ private:
 
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
+	void legend(std::string key);
 
-	void legendKeyValue(std::string key, std::string value);
-	std::string legendKey(osg::Object* object, std::string key);
+	int valueOfKey(osg::Object* object, std::string key);
+	void eraseLegend();
+
 
 };
 
