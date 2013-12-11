@@ -10,6 +10,7 @@ using namespace std;
 
 UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	UserCommands::root=root;
+	UserCommands::hudIndex = NULL;
 }
 
 /**
@@ -19,7 +20,6 @@ void UserCommands::executeCommand(string command){
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
 	if(command.compare("showLegend")==0) {showLegend();return;}
-	if(command.compare("hideLegend")==0) {hideLegend();return;}
 	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
@@ -27,10 +27,16 @@ void UserCommands::executeCommand(string command){
 
 void UserCommands::showHelp(){
 cout<<"Commands List:"<<endl;
+
 cout<<"\t"<<"'help'"<<"\t"<<"Show commands list."<<endl;
 cout<<"\t"<<"'showAll'"<<"\t"<<"Show all metadata stored on all geodes."<<endl;
 cout<<"\t"<<"'showLegend'"<<"\t"<<"Displays the legend."<<endl;
 cout<<"\t"<<"'hideLegend'"<<"\t"<<"Hides the legend."<<endl;
+
+cout<<"\t"<<"'help'"<<"\t"<<"Show commands list"<<endl;
+cout<<"\t"<<"'showAll'"<<"\t"<<"Show all metadata stored on all geodes"<<endl;
+cout<<"Pointez dans le Viewer3D un objet et appuyez sur espace pour récupérer les métadonnées contenues"<<endl;
+
 }
 
 
@@ -48,6 +54,7 @@ void UserCommands::showAllMetadata(){
 
 	for(unsigned int i=0;i<geodes.size();i++){
 		showMetadata(geodes[i]);
+		//showOneMetadata(geodes[i]);
 	}
 }
 
@@ -73,7 +80,7 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 }
 
 osg::ref_ptr<osgText::Font> g_font = osgText::readFontFile("/usr/share/fonts/truetype/freefont/FreeSans.ttf");
-osgText::Text* createText( const osg::Vec3& pos, const std::string& content, float size )
+osg::ref_ptr<osgText::Text> UserCommands::createText( const osg::Vec3& pos, const std::string& content, float size )
 {
 	osg::ref_ptr<osgText::Text> text = new osgText::Text;
 	text->setDataVariance( osg::Object::DYNAMIC );
@@ -82,10 +89,25 @@ osgText::Text* createText( const osg::Vec3& pos, const std::string& content, flo
 	text->setAxisAlignment( osgText::TextBase::XY_PLANE );
 	text->setPosition( pos );
 	text->setText( content );
-	return text.release();
+	return text;
 }
 
-osg::Drawable* createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, osg::Image* image=NULL)
+void UserCommands::showOneMetadata(osg::Object* osgObject){
+	//On récupère le userdata de l'object
+		osg::ref_ptr<Metadata> metadata =
+				dynamic_cast<Metadata*> (osgObject->getUserData() );
+
+		if(metadata)
+		{
+			citygml::AttributesMap::const_iterator iterator=metadata->attributes.find("measuredHeight");
+			if(iterator!=metadata->attributes.end()){//il a trouvé l'attribut
+			cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;
+			}
+		}
+}
+
+
+osg::Drawable* UserCommands::createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, const osg::Vec4& color, osg::Image* image=NULL)
 {
     // set up the Geometry.
     osg::Geometry* geom = new osg::Geometry;
@@ -126,7 +148,7 @@ osg::Drawable* createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& widt
     return geom;
 }
 
-osg::Camera* createHUDCamera() {
+osg::Camera* UserCommands::createHUDCamera() {
 	osg::ref_ptr<osg::Camera> camera = new osg::Camera;
 	camera->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
 	camera->setClearMask( GL_DEPTH_BUFFER_BIT );
@@ -155,7 +177,7 @@ osg::Camera* createHUDCamera() {
 	HUDBackgroundIndices->push_back(3);
 
 	osg::Vec4Array* HUDcolors = new osg::Vec4Array;
-	HUDcolors->push_back(osg::Vec4(0.8f,0.8f,0.8f,0.8f));
+	HUDcolors->push_back(osg::Vec4(0.1f,0.1f,0.1f,0.1f));
 
 	osg::Vec2Array* texcoords = new osg::Vec2Array(4);
 	(*texcoords)[0].set(0.0f,0.0f);
@@ -166,9 +188,6 @@ osg::Camera* createHUDCamera() {
 	HUDBackgroundGeometry->setTexCoordArray(0,texcoords);
 	osg::Texture2D* HUDTexture = new osg::Texture2D;
 	HUDTexture->setDataVariance(osg::Object::DYNAMIC);
-//	osg::Image* hudImage;
-//	hudImage = osgDB::readImageFile("HUDBack2.tga");
-//	HUDTexture->setImage(hudImage);
 	osg::Vec3Array* HUDnormals = new osg::Vec3Array;
 	HUDnormals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
 	HUDBackgroundGeometry->setNormalArray(HUDnormals);
@@ -182,8 +201,7 @@ osg::Camera* createHUDCamera() {
 	// Create and set up a state set using the texture from above:
 	osg::StateSet* HUDStateSet = new osg::StateSet();
 	HUDGeode->setStateSet(HUDStateSet);
-	HUDStateSet->
-	  setTextureAttributeAndModes(0,HUDTexture,osg::StateAttribute::ON);
+	HUDStateSet->setTextureAttributeAndModes(0,HUDTexture,osg::StateAttribute::ON);
 
 	// For this state set, turn blending on (so alpha texture looks right)
 	HUDStateSet->setMode(GL_BLEND,osg::StateAttribute::ON);
@@ -193,9 +211,6 @@ osg::Camera* createHUDCamera() {
 	HUDStateSet->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
 	HUDStateSet->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 
-	// Need to make sure this geometry is draw last. RenderBins are handled
-	// in numerical order so set bin number to 11
-	HUDStateSet->setRenderBinDetails( 11, "RenderBin");
 
 	camera->addChild(HUDGeode);
 	return camera.release();
@@ -205,22 +220,29 @@ osg::Camera* createHUDCamera() {
  * Ajoute un HUD qui contient la légende.
  */
 void UserCommands::showLegend(){
+	if (hudIndex == NULL) {
+		//Creates colored figures and a text legend and places them in the HUD
+		osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
+		textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f).get());
+		for (int i = 0; i < 8; i++) {
+			//Coordonnée verticale
+			int b = 165 - 50*(i%4);
+			//Coordonnée horizontale
+			int a = 35 + 60*(i-i%4);
+			textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), "Test", 20.0f).get());
+			textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), osg::Vec4(100, 100, 100, 1)));
+		}
 
-	//Creates colored figures and a text legend and places them in the HUD
-	osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
-	textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f));
-	for (int i = 0; i < 15; ++i) {
-		int b = 165 - 50*(i%4);
-		int a = 35 + 60*(i-i%4);
-		textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), "Test", 20.0f));
-		textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f)));
+
+		osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
+		hudCamera->addChild( textGeode.get() );
+		hudCamera->setName("HUD");
+		root->addChild(hudCamera);
+		hudIndex = root->getChildIndex(hudCamera);
 	}
-
-	osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
-	hudCamera->addChild( textGeode.get() );
-	root->addChild(hudCamera);
-
+	else {
+		root->removeChild(hudIndex, 1);
+		hudIndex = NULL;
+	}
 }
 
-void UserCommands::hideLegend() {
-}

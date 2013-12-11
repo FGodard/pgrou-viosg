@@ -19,17 +19,23 @@ int main(int argc, char** argv )
 	//VERIFICATION ARGC/ARGV
 	//TODO Faire la gestion du nom de fichier et arguments et aide
 	if (argc!=2){
-		cout<<"Mettre le chemin absolu ou relatif du fichier en argument!"<<endl;
+		cout<<"Echec. Mettre le chemin absolu ou relatif d'un fichier gml ou citygml en argument"<<endl;
 		return 0;
 	}
 	string filePath=argv[1];
 
+
+	osg::ref_ptr<osg::Group> root(new osg::Group);
+	root->setDataVariance(osg::Object::DYNAMIC);
+
 	//CHARGEMENT FICHIER
 	CityGmlReader cityGmlReader;
 	osg::ref_ptr<osg::Group> cityGroup =cityGmlReader.readCityGmlFile(filePath);
-	osg::ref_ptr<osg::Group> root(new osg::Group);
 	root->addChild(cityGroup);
-	root->setDataVariance(osg::Object::DYNAMIC);
+
+	//TODO Chargement des nouvelles données ici
+
+
 	//CREATION DU VIEWER
 	osgViewer::Viewer viewer ;
 	viewer.setSceneData(root);
@@ -43,7 +49,6 @@ int main(int argc, char** argv )
 	UserCommands userCommands(root);
 	string command;
 	viewer.realize();
-
 	while(!viewer.done()){
 		if( UiThread::instance()->copyNewCommandTo(command)) {
 		userCommands.executeCommand(command);
@@ -51,18 +56,13 @@ int main(int argc, char** argv )
 		viewer.frame();
 	}
 
-	//FIXME Hotfix pour empecher une appel blocant thread ui: à améliorer
-	cout<<"!!IMPORTANT!!:Presser Entrée dans le terminal pour fermer le programme"<<endl;
-	UiThread::instance()->cancel();
+	//FIXME Hotfix pour terminer l'appel blocant cin.getLine() dans UiThread: à améliorer
+	cout<<"Fenêtre graphique fermée, appuyer sur Entrée pour terminer le programme"<<endl;
 
+	UiThread::instance()->cancel();
 	cout<<"Exiting program"<<endl;
 	return 0;
 }
-
-
-
-// -----FONCTIONS POUR RECUPERER LES DONNES DE LA SCENE ICI
-
 
 
 
