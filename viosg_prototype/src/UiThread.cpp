@@ -20,7 +20,7 @@ void UiThread::run()
 {
   threadDone = false;
   dirty = true;
-  command="";
+  command="main";
   do
   {
     YieldCurrentThread();

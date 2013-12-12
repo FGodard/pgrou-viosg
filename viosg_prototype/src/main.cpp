@@ -85,8 +85,6 @@ int main(int argc, char** argv )
 	cout<<"Exiting program"<<endl;
 
 }
-//	else
-//		cout<<"     enter absolute or relative file path as an argument "<<endl;
 
 	return 0;
 }
