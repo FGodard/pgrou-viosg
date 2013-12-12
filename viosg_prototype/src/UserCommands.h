@@ -25,10 +25,13 @@ private:
 	void showHelp();
 	void showAllMetadata();
 	void showAllTypeMetadata();
+	//affiche tous les types
 	void showType();
+	//affiche tous les valeurs possibles pour un type choisie
+	void showValues();
 	void showMetadata(osg::Object* object);
-	//void showTypeMetadata(osg::Object* object);
 	std::vector<std::string> showTypeMetadata(osg::Object* osgObject);
+	std::vector<std::string> showValueMetadata(osg::Object* osgObject, string type);
 
 };
 

@@ -32,6 +32,7 @@ void UserCommands::executeCommand(string command){
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
 	if(command.compare("showAllType")==0) {showAllTypeMetadata();return;}
 	if(command.compare("showAllTypeMetadata")==0) {showType();return;}
+	if(command.compare("Valeur")==0) {showValues();return;}
 	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
@@ -43,6 +44,7 @@ cout<<"\t"<<"'help'"<<"\t"<<"Show commands list"<<endl;
 cout<<"\t"<<"'showAll'"<<"\t"<<"Show all metadata stored on all geodes"<<endl;
 cout<<"\t"<<"'showAllType'"<<"\t"<<"Show all types of metadata stored on all geodes"<<endl;
 cout<<"\t"<<"'showAllTypeMetadata'"<<"\t"<<"Show all types of metadata possible "<<endl;
+cout<<"\t"<<"'showAllValuesOfAllTypeMetadata'"<<"\t"<<"Show all values of each type of metadata "<<endl;
 
 }
 
@@ -116,9 +118,67 @@ void UserCommands::showType(){
      }
    }
      //affichage du tableau globale contenant tous les types possibles
-     for(unsigned int k=0;k<table_globale.size();k++)
+         for(unsigned int k=0;k<table_globale.size();k++)
     	 {cout<<table_globale[k]<<endl;}
          cout<<table_globale.size()<<endl;
+}
+/****************************************************************************************************/
+void UserCommands::showValues(){
+	string type ="yearOfConstruction";
+	GeodeFinder geodeFinder;
+		vector <std::string> table_valeur_geode , table_donne;
+		root->accept(geodeFinder);
+		vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+        cout<<"Affiche les valeurs possibles pour chaque types"<<endl;
+       //parcours de toutes les valeurs pour un type
+        cout<< "Le type: "<<type<<"peut avoir comme valeur"<<endl;
+        for(unsigned int p=0;p<geodes.size();p++){
+    	 //creation de table contenant les valeurs à chaque fois
+    	 table_valeur_geode=showValueMetadata(geodes[p],type);
+    	 //parcours de la table de chaque geode pour verifier si cette valeur existe deja ou non
+     for(unsigned int j=0;j<table_valeur_geode.size();j++){
+    	 bool find=false;
+    	 unsigned int i=0;
+    	 while (!find && i<table_donne.size()){
+    		 //comparaison entre se qui existe et la nouvelle valeur dans la table de chaque geode
+    		 if(table_donne.at(i).compare(table_valeur_geode[j])==0){
+    			 find = true;
+    		 }
+    		 else {
+    			 i++;
+    		 }
+    	         }
+    	 //si c'est une nouvelle valeur on  doit l'ajouter à la fin du tableau de donnees
+    	 if(!find){ table_donne.push_back(table_valeur_geode[j]);}
+     }
+   }
+     //affichage du tableau globale contenant tous les valeurs possibles de ce type
+         for(unsigned int k=0;k<table_donne.size();k++)
+    	 {cout<<table_donne[k]<<endl;}
+         cout<<table_donne.size()<<endl;
+}
+
+
+
+
+/*****************************************************************************************************************/
+/** retourne un tableau de donnees
+ * fonction qui retourne les  donnees de toutes les geodes selon le type choisie qui est passé en parametre
+ * sous forme d'un tableau qui sera ensuite stocker en tant que table_geode_donnees
+ */
+std::vector<std::string> UserCommands::showValueMetadata(osg::Object* osgObject, string type)
+{	osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (osgObject->getUserData() );
+    vector <std::string> tab;
+	if(metadata)
+		{
+		citygml::AttributesMap::const_iterator iterator;
+		//trouver les donnees d'un type donne
+	    for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+	    	// trouver les donnees de ce type
+	    	if (iterator->first.compare(type)==0)
+		  tab.push_back(iterator->second);
+	    }
+		return tab ;
 }
 /***************************************************************************************************************/
 /**
@@ -160,3 +220,4 @@ std::vector<std::string> UserCommands::showTypeMetadata(osg::Object* osgObject)
 		cout<<endl;
 		return tab ;
 }
+
