@@ -17,7 +17,10 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	UserCommands::root=root;
 }
 /**
- * help ,print all* print type *print value (type)
+ * help
+ * print all
+ * print type
+ * print value (type)
  * showcolor(type)
  * showtransparence(type)
  * show reset
@@ -35,7 +38,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		vector <string> command_options;
 		do
 		{
-		    pos_end = command.find ("-", pos_start);
+		    pos_end = command.find (" ", pos_start);
 		    string option;
 		    if (pos_end != command.length())
 		    {
@@ -54,18 +57,26 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	return command_options;
 	}
 /**
- * test command: fonction pour tester les commandes
+ * test command: fonction pour tester si les commandes utilisateurs sont valides
+ * la liste des commandes possibles est chargée à partir du ficher .gml  d'entrée
  */
 
 	bool test_option( vector <string> options )
 	{
-		//les differentes commandes possibles  stockés dans cmd
-		//Todo fonction Wafa
 		vector <string> cmd;
-		cmd.push_back("help");
+		//les differentes commandes possibles  stockés dans cmd
 		cmd.push_back("description");
+		cmd.push_back("name");
+		//Todo appel fonction Wafa pour initialiser cmd
+
+		cmd.push_back("help");
 		cmd.push_back("printAll");
 		cmd.push_back("print");
+		cmd.push_back("showLegend");
+		cmd.push_back("showColor");
+		cmd.push_back("showReset");
+		cmd.push_back("showTransparence");
+		//
 		for(unsigned int j=0;j<options.size();j++){
 		  bool find = false;
 		  unsigned int i=0;
@@ -77,8 +88,9 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 				  i++;
 			  }
 		  }
+		  //si une commande n'existe pas dans la liste des commandes possible => quitter avec un message d'erreur
 		  if(!find){
-			  cout<<"\t"<<options[j]<<" does not exist "<<endl;
+			  cout<<"**** ERROR : Command '"<<options[j]<<"' does not exist "<<endl;
 			  return false;
 		  }
 		 }
@@ -93,26 +105,37 @@ void UserCommands::executeCommand(string command){
 
 	//lectute de la commande
 	vector <string> _command=readCommand(command);
+	for (unsigned int i=0;i<_command.size();i++){
+			cout<<"*"<<_command[i]<<"*"<<endl;
+		}
 
 	//appel de la fonction test pour vérifier la saisie de l'utilisateur
 	bool okToContinue= test_option(_command);
 
+	//si toutes les commandes et les options sont valides => affichage
 	if(okToContinue){
-	//commande entrée : help => afficher le menu help
-	if(_command[0].compare("help")==0){showHelp();return;}
+		//commande entrée : help => afficher le menu help
+		if(_command[0].compare("help")==0){showHelp();return;}
 
-	//commande d'entrée: showAll => afficher toutes les metadonnées dans le ficher
-	if(_command[0].compare("printAll")==0) {showAllMetadata();return;}
+		//commande d'entrée: showAll => afficher toutes les metadonnées dans le ficher
+		if(_command[0].compare("printAll")==0) {showAllMetadata();return;}
 
-	//print type: afficher un seul type
-	if(_command[0].compare("print")==0){
-		for (unsigned int j=1;j<_command.size();j++){
-			printAMetadata(_command[j]);
-		}
+		//print type: afficher les options saisies
+		if(_command[0].compare("print")==0){
+			if(_command.size()==1){
+				cout<<"**** ERROR : "<<"print Command needs at least one argument"<<endl;
+				}
+				else{
+					for (unsigned int j=1;j<_command.size();j++){
+						printAMetadata(_command[j]);
+						}
+					}
 			return;
+			}
+		//TODO les autres commandes
 		}
-	}else{
-	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
+	else{
+	cout<<"Type 'help' for commands list or close the osgViewer to close the program"<<endl;
 	}
 }
 
@@ -121,8 +144,8 @@ void UserCommands::showHelp(){
 cout<<"Commands List:"<<endl;
 cout<<"\t"<<"'help'"<<"\t"<<"Show commands list"<<endl;
 cout<<"\t"<<"'printAll'"<<"\t"<<"Show all metadata stored on all geodes"<<endl;
-cout <<"\t"<<"'print -option'"<<"\t"<<"Show optional informations stored on each geode "<<endl;
-cout<<"\t"<<"'showColor -option'"<<"\t"<<"Show metadata in color"<<endl;
+cout <<"\t"<<"'print-option'"<<"\t"<<"Show optional informations stored on each geode "<<endl;
+cout<<"\t"<<"'showColor-option'"<<"\t"<<"Show metadata in color"<<endl;
 
 }
 
@@ -166,8 +189,6 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 		cout<<endl;
 	}
 }
-
-
 
 
 /**
