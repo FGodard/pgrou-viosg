@@ -64,7 +64,7 @@ void UserCommands::showAllMetadata(){
 
 /************************************************************************************************/
 /*
- *Affiche toutes les types de metadonnees qu'on peut manipuler
+ *Affiche toutes les types de metadonnees qu'on peut manipuler pour chaque geode
  */
 
 void UserCommands::showAllTypeMetadata(){
@@ -83,21 +83,27 @@ for(unsigned int i=0;i<geodes.size();i++)
    }
 }
 /**********************************************************************/
+/**
+ * void permettant de trouver la liste final de tous les types de metadonnees possibles
+ */
 void UserCommands::showType(){
 	cout<<endl<<"AFFICHAGE DES TYPES POSSIBLES"<<endl;
 		GeodeFinder geodeFinder;
 		vector <std::string> table_geode , table_globale;
 		root->accept(geodeFinder);
 		vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+		//initialisation de la table_globale par les types de la premieres geode
 	 table_globale=showTypeMetadata(geodes[0]);
-	 //affiche les types de cette geode
-
+	 //parcours de toutes les geodes
      for(unsigned int p=0;p<geodes.size();p++){
+    	 //creation de table contenant les types à chaque fois
     	 table_geode=showTypeMetadata(geodes[p]);
+    	 //parcours de la table de chaque geode pour verifier si ce type existe deja ou non
      for(unsigned int j=0;j<table_geode.size();j++){
     	 bool find=false;
     	 unsigned int i=0;
     	 while (!find && i<table_globale.size()){
+    		 //comparaison entre se qui existe et le type de la table de chaque geode
     		 if(table_globale.at(i).compare(table_geode[j])==0){
     			 find = true;
     		 }
@@ -105,12 +111,14 @@ void UserCommands::showType(){
     			 i++;
     		 }
     	         }
+    	 //si c'est un nouveau type on  doit l'ajouter à la fin du tableau globale
     	 if(!find){ table_globale.push_back(table_geode[j]);}
      }
    }
+     //affichage du tableau globale contenant tous les types possibles
      for(unsigned int k=0;k<table_globale.size();k++)
     	 {cout<<table_globale[k]<<endl;}
-     cout<<table_globale.size()<<endl;
+         cout<<table_globale.size()<<endl;
 }
 /***************************************************************************************************************/
 /**
@@ -135,7 +143,7 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 }
 
 /*****************************************************************************************************************/
-/**
+/** retourne un tableau de type
  * fonction qui retourne les types de donnees pour chaque geode
  * sous forme d'un tableau qui sera ensuite stocker en tant que table_geode
  */
