@@ -23,9 +23,12 @@ public:
 private:
 	osg::ref_ptr<osg::Group> root;
 	void showHelp();
-
 	void showAllMetadata();
+	void showAllTypeMetadata();
+	void showType();
 	void showMetadata(osg::Object* object);
+	//void showTypeMetadata(osg::Object* object);
+	std::vector<std::string> showTypeMetadata(osg::Object* osgObject);
 
 };
 
