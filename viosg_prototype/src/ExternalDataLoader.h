@@ -20,9 +20,13 @@ public:
 	void loadData(std::string filePath);
 
 private:
-	void print_element_names(xmlNode * a_node);
-	void print_id_attributes(xmlNode * a_node);
-	void printSpecificAttribute(xmlNode * rootNode, const xmlChar * attributeName);
+	bool loadCityGMLData(std::string filePathCityGML);
+	bool loadExternalFileData(std::string filePath);
+
+	void printTestCityGML(xmlNode * rootNode);
+	void printTestCityGMLPosition(xmlNode * rootNode);
+	void printTestExtern(xmlNode * rootNode);
+
 	osg::ref_ptr<osg::Group> externalDataGroup;
 };
 
