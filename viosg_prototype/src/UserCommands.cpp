@@ -136,31 +136,32 @@ void UserCommands::showValues(){
     	 //creation de table contenant les valeurs à chaque fois
     	 table_valeur_geode=showValueMetadata(geodes[p],type);
     	 //parcours de la table de chaque geode pour verifier si cette valeur existe deja ou non
-     for(unsigned int j=0;j<table_valeur_geode.size();j++){
-    	 bool find=false;
-    	 unsigned int i=0;
-    	 while (!find && i<table_donne.size()){
-    		 //comparaison entre se qui existe et la nouvelle valeur dans la table de chaque geode
-    		 if(table_donne.at(i).compare(table_valeur_geode[j])==0){
-    			 find = true;
-    		 }
-    		 else {
-    			 i++;
-    		 }
-    	         }
-    	 //si c'est une nouvelle valeur on  doit l'ajouter à la fin du tableau de donnees
-    	 if(!find){ table_donne.push_back(table_valeur_geode[j]);}
-     }
-   }
+    	 table_donne=testCommand(table_valeur_geode, table_donne);
+        }
      //affichage du tableau globale contenant tous les valeurs possibles de ce type
          for(unsigned int k=0;k<table_donne.size();k++)
     	 {cout<<table_donne[k]<<endl;}
          cout<<table_donne.size()<<endl;
 }
-
-
-
-
+/***********************************************************************************************************/
+std::vector<std::string>UserCommands::testCommand( vector <string> table_gde, vector <string> table_tot){
+	 for(unsigned int j=0;j<table_gde.size();j++){
+	    	 bool find=false;
+	    	 unsigned int i=0;
+	    	 while (!find && i<table_tot.size()){
+	    		 //comparaison entre se qui existe et la nouvelle valeur dans la table de chaque geode
+	    		 if(table_tot.at(i).compare(table_gde[j])==0){
+	    			 find = true;
+	    		 }
+	    		 else {
+	    			 i++;
+	    		 }
+	    	         }
+	    	 //si c'est une nouvelle valeur on  doit l'ajouter à la fin du tableau de donnees
+	    	 if(!find){ table_tot.push_back(table_gde[j]);}
+	     }
+	 return table_tot;
+}
 /*****************************************************************************************************************/
 /** retourne un tableau de donnees
  * fonction qui retourne les  donnees de toutes les geodes selon le type choisie qui est passé en parametre

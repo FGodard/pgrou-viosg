@@ -32,6 +32,8 @@ private:
 	void showMetadata(osg::Object* object);
 	std::vector<std::string> showTypeMetadata(osg::Object* osgObject);
 	std::vector<std::string> showValueMetadata(osg::Object* osgObject, string type);
+	std::vector<std::string> testCommand( vector <string> table_gde, vector <string> table_tot);
+
 
 };
 
