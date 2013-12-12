@@ -28,6 +28,7 @@ private:
 	vector<string>readCommand(string command);
 	void printOneMetadata(osg::Object* object, std::string meta);
 	void printAMetadata(std::string meta);
+
 };
 
 #endif /* USERCOMMANDS_H_ */

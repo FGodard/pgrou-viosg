@@ -15,7 +15,9 @@ using namespace std;
 using namespace citygml;
 
 
-
+/**
+ * vérifier l'existence et l'extension du fichier
+ */
 bool is_readable( const std::string & file )
 {
 	string ext;
