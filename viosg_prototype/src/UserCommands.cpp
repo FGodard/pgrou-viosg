@@ -148,9 +148,8 @@ osg::Drawable* UserCommands::createLegendPolygon(const osg::Vec3& corner,const o
     }
 
 	osg::Vec4Array* colors = new osg::Vec4Array;
-	osg::Vec4 testColor = osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	for (int var = 0; var < 4; ++var) {
-		colors->push_back(testColor);
+		colors->push_back(color);
 	}
 
 	geom->setColorArray(colors);
