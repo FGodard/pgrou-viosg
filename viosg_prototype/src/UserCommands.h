@@ -34,9 +34,10 @@ private:
 	std::string valueOfKey(osg::Object* object, std::string key);
 	void displayInColor(std::string key);
 	void displayOnly(std::string key, int value);
+	void setArrayColor();
+	void transparenceBut(std::string key, int value);
 
-
-
+	osg::Vec4Array* colors;
 
 };
 
