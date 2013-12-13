@@ -9,12 +9,14 @@
 
 #include "UserCommands.h"
 
-#include <algorithm>
+//#include <algorithm>
 #include <Geode>
+//#include <iostream>
 #include <map>
 #include <ref_ptr>
 #include <utility>
 #include <vector>
+#include<sstream>
 
 using namespace std;
 
@@ -126,7 +128,8 @@ void UserCommands::showType(){
 void UserCommands::showValues(){
 	string type ="yearOfConstruction";
 	GeodeFinder geodeFinder;
-		vector <std::string> table_valeur_geode , table_donne;
+		vector <std::string> table_valeur_geode , table_donne ;
+		vector<int>table_final;
 		root->accept(geodeFinder);
 		vector<osg::Geode*> geodes=geodeFinder.getNodeList();
         cout<<"Affiche les valeurs possibles pour chaque types"<<endl;
@@ -137,13 +140,18 @@ void UserCommands::showValues(){
     	 table_valeur_geode=showValueMetadata(geodes[p],type);
     	 //parcours de la table de chaque geode pour verifier si cette valeur existe deja ou non
     	 table_donne=testCommand(table_valeur_geode, table_donne);
-        }
+         }
+       table_final=triTableau(table_donne, table_donne.size());
      //affichage du tableau globale contenant tous les valeurs possibles de ce type
-         for(unsigned int k=0;k<table_donne.size();k++)
-    	 {cout<<table_donne[k]<<endl;}
-         cout<<table_donne.size()<<endl;
+         for(unsigned int k=0;k<table_final.size();k++)
+    	 {cout<<table_final[k]<<endl;}
+         cout<<table_final.size()<<endl;
 }
 /***********************************************************************************************************/
+/*
+ * fonction prend en parametre deux tableau
+ * donne en resultat un tableau global contenant tout les elements
+ * */
 std::vector<std::string>UserCommands::testCommand( vector <string> table_gde, vector <string> table_tot){
 	 for(unsigned int j=0;j<table_gde.size();j++){
 	    	 bool find=false;
@@ -161,6 +169,41 @@ std::vector<std::string>UserCommands::testCommand( vector <string> table_gde, ve
 	    	 if(!find){ table_tot.push_back(table_gde[j]);}
 	     }
 	 return table_tot;
+}
+/******************************************************************************************************************/
+/*
+ * fonction tri dans le cas des valeurs numeriques
+ */
+std::vector<int>UserCommands::triTableau( vector <string> tab,int l){
+	vector<int> tabl;
+	cout<<"ee1"<<endl;
+	//changer le type du tableau en tableau de int
+	tabl=StringToInt(tab);
+	cout<<"tableau changer en tableau de int "<<endl;
+	for(int i = 0; i < l; i++) {   // on va jusqu'a taille du tableau - 1
+      for(int i = 0; i < l; i++)    // car tab[3 + 1] = tab[4] n'est pas défini !
+           if(tabl[i] > tabl[i+1])
+            std::swap(tabl[i], tabl[i+1]);
+}
+	cout<<"tableau trié "<<endl;
+ return tabl;
+}
+/******************************************************************************************************************/
+/*
+ * Convertin d'un tableau de chaine de caractaire en tableau d'entier
+ */
+std::vector<int>UserCommands::StringToInt( vector <string> tab)
+{ vector<int> tableau;
+int x;
+cout<<tab.size()<<endl;
+	for(unsigned int i=0;i<tab.size();i++)
+	{
+		string myStream = tab[i];
+		istringstream buffer(myStream);
+		buffer >> x;
+		tableau.push_back(x);
+	}
+	return tableau;
 }
 /*****************************************************************************************************************/
 /** retourne un tableau de donnees
