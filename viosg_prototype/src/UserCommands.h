@@ -30,12 +30,12 @@ private:
 
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
-	void colorLegend(std::string key);
 
 	std::string valueOfKey(osg::Object* object, std::string key);
+	void displayInColor(std::string key);
+	void displayOnly(std::string key, int value);
 
-	void changeColor();
-	void setTransparence();
+
 
 
 };

@@ -18,9 +18,10 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 void UserCommands::executeCommand(string command){
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
-	if(command.compare("legendYear")==0) {colorLegend("yearOfConstruction");return;}
-	if(command.compare("Transparency")==0) {setTransparence();return;}
-	if(command.compare("changeColor")==0) {changeColor();return;}
+	if(command.compare("colorLegendYear")==0) {displayInColor("yearOfConstruction");return;}
+	if(command.compare("colorLegendHeight")==0){displayInColor("measuredHeight");return;}
+	if(command.compare("transparent1996")==0) {displayOnly("yearOfConstruction", 1996);return;}
+
 
 
 
@@ -74,7 +75,7 @@ void UserCommands::showMetadata(osg::Object* osgObject){
 	}
 }
 
-
+//Pour une géode donnée, il renvoit la valeur de la clé passée en paramètre
 std::string UserCommands::valueOfKey(osg::Object* osgObject, std::string key){
 	osg::ref_ptr<Metadata> metadata =
 			dynamic_cast<Metadata*> (osgObject->getUserData());
@@ -94,8 +95,8 @@ std::string UserCommands::valueOfKey(osg::Object* osgObject, std::string key){
 	}
 }
 
-//pour assigner les couleurs selon la valeur du type choisi en paramètre
-void UserCommands::colorLegend(std::string key){
+//Permet l'affichage couleur d'une clé
+void UserCommands::displayInColor(std::string key){
 int valMin;
 int valMax;
 int tableau[10];
@@ -123,9 +124,9 @@ for(unsigned int i=0;i<geodes.size();i++){
 	osg::ref_ptr<osg::Material> material = new osg::Material;
 
 		if((valeur >= tableau[0]) && (valeur < tableau[1]))
-			material->setDiffuse(osg::Material::FRONT,osg::Vec4(0.0,0.0,255.0,1.0));//bleu
+			material->setDiffuse(osg::Material::FRONT,osg::Vec4(0.0,0.0,1.0,1.0));//bleu
 else if((valeur >= tableau[1]) && (valeur < tableau[2]))
-	material->setDiffuse(osg::Material::FRONT,osg::Vec4(191.0,62.0,255.0,1.0));//violet
+	material->setDiffuse(osg::Material::FRONT,osg::Vec4(0.0,1.0,0.0,1.0));//vert
 else if((valeur >= tableau[2]) && (valeur < tableau[3]))
 	material->setDiffuse(osg::Material::FRONT,osg::Vec4(0.0,191.0,255.0,1.0));//azur
 else if((valeur >= tableau[3]) && (valeur < tableau[4]))
@@ -142,28 +143,27 @@ else if((valeur >= tableau[8]) && (valeur <= tableau[9]))
 	material->setDiffuse(osg::Material::FRONT,osg::Vec4(255.0,215.0,0.0,1.0));//jaune
 
 	geodes[i]->getOrCreateStateSet()->setAttribute(material.get());
-
 	}
+
 }
 
-void UserCommands::changeColor(){
+//Affiche uniquement les géodes qui correspondent au couple (clé, valeur) donné en paramètre
+void UserCommands::displayOnly(std::string key, int value){
 	GeodeFinder geodeFinder;
-		root->accept(geodeFinder);
-		vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	root->accept(geodeFinder);
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
+	for(unsigned int i=0;i<geodes.size();i++){
+		std::string test =valueOfKey(geodes[i],key);
+		int valeur = atoi(test.c_str());
 		osg::ref_ptr<osg::Material> material = new osg::Material;
-		material->setDiffuse(osg::Material::FRONT,osg::Vec4(1.0f,0.0f,0.0f,1.0f));
-		geodes[1]->getOrCreateStateSet()->setAttribute(material.get());
+
+			if(valeur != value){
+					material->setTransparency(osg::Material::FRONT, 1.0);
+					geodes[i]->getOrCreateStateSet()->setAttribute(material.get());
+					geodes[i]->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);}
+
+}
 }
 
-void UserCommands::setTransparence(){
-	GeodeFinder geodeFinder;
-			root->accept(geodeFinder);
-			vector<osg::Geode*> geodes=geodeFinder.getNodeList();
-
-			osg::ref_ptr<osg::Material> material = new osg::Material;
-			material->setTransparency(osg::Material::FRONT, 1.0);
-			geodes[1]->getOrCreateStateSet()->setAttribute(material.get());
-			geodes[1]->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-	}
 
