@@ -11,6 +11,10 @@
 #include <osg/Group>
 #include <string>
 #include <iostream>
+#include <osg/BlendFunc>
+#include <osg/BlendColor>
+#include <osg/Material>
+#include <osg/Depth>
 
 #include "Metadata.h"
 #include "GeodeFinder.h"
@@ -26,10 +30,12 @@ private:
 
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
-	void legend(std::string key);
+	void colorLegend(std::string key);
 
-	int valueOfKey(osg::Object* object, std::string key);
-	void eraseLegend();
+	std::string valueOfKey(osg::Object* object, std::string key);
+
+	void changeColor();
+	void setTransparence();
 
 
 };
