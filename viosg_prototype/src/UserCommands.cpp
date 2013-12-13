@@ -11,6 +11,7 @@ using namespace std;
 UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	UserCommands::root=root;
 	UserCommands::hudIndex = NULL;
+	UserCommands::legend = NULL;
 }
 
 /**
@@ -230,28 +231,35 @@ osg::Camera* UserCommands::createHUDCamera() {
  */
 void UserCommands::showLegend(){
 	if (hudIndex == NULL) {
-		//Creates colored figures and a text legend and places them in the HUD
-		osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
-		//TODO Bug incompréhensible d'affichage, il faut en créer deux
-		textGeode->addDrawable(createText(osg::Vec3(20, 140, 0.0f), "Affichage des tests", 30.0f));
-		textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f));
-		for (int i = 0; i < 13; i++) {
-			//Coordonnée verticale
-			int b = 165 - 50*(i%4);
-			//Coordonnée horizontale
-			int a = 35 + 60*(i-i%4);
-			textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), osg::Vec4(100, 100, 100, 1)));
-			textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), "Test", 20.0f));
+		if (legend != NULL) {
+			//Creates colored figures and a text legend and places them in the HUD
+			osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
+			//TODO Bug incompréhensible d'affichage, il faut en créer deux
+			textGeode->addDrawable(createText(osg::Vec3(20, 140, 0.0f), "Affichage des tests", 30.0f));
+			textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f));
 
+			int nbLibelles = legend.libelles.size();
+			for (int i = 0; i < nbLibelles; i++) {
+				//Coordonnée verticale
+				int b = 165 - 50*(i%4);
+				//Coordonnée horizontale
+				int a = 35 + 60*(i-i%4);
+				textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), legend.libelles[i].couleurLibelle));
+				textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), legend.libelles[i].nomLibelle, 20.0f));
+
+			}
+
+
+
+			osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
+			hudCamera->addChild( textGeode.get() );
+			hudCamera->setName("HUD");
+			root->addChild(hudCamera);
+			hudIndex = root->getChildIndex(hudCamera);
 		}
-
-
-
-		osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
-		hudCamera->addChild( textGeode.get() );
-		hudCamera->setName("HUD");
-		root->addChild(hudCamera);
-		hudIndex = root->getChildIndex(hudCamera);
+		else {
+			cout << "Il n'y a pas de légende à afficher." <<endl;
+		}
 	}
 	else {
 		root->removeChild(hudIndex, 1);

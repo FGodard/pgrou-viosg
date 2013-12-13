@@ -23,10 +23,21 @@
 #include "GeodeFinder.h"
 #include "citygml.h"
 
+typedef struct {
+	std::string nomLibelle;
+	osg::Vec4 couleurLibelle;
+} Libelle;
+typedef struct {
+	std::string nomLegende;
+	std::vector<Libelle> libelles;
+} Legende;
+
+
 class UserCommands {
 public:
 	UserCommands(osg::ref_ptr<osg::Group> root);
 	void executeCommand(std::string command);
+	Legende legend;
 private:
 	int hudIndex;
 	osg::ref_ptr<osg::Group> root;
