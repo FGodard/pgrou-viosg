@@ -35,7 +35,7 @@ void UserCommands::executeCommand(string command){
         if(command.compare("showAll")==0) {showAllMetadata();return;}
         if(command.compare("showAllType")==0) {showAllTypeMetadata();return;}
         if(command.compare("showAllTypeMetadata")==0) {tab=showType();return;}
-        if(command.compare("Valeur")==0) {tab=showValues();return;}
+        if(command.compare("Valeur")==0) {printvaleur();return;}
         //Si aucune commande trouvée
         cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
@@ -178,12 +178,52 @@ vector<string>UserCommands::showValues(){
                                  {cout<<table_donne[k]<<endl;}
 
         return table_donne;}
-
+/****************************************************************************************************************/
+/**
+ *
+ *procedure qui appelle la fonction sho wvalue et teste si le retour est numerique elle fait le tri
+ */
+void UserCommands::printvaleur(){
+	vector<int> table2;
+vector<string> table1=showValues();
+bool b=NumericOrNot(table1);
+if(b==true)
+	table2=PrintNumericValuesTri(table1);
+}
 /***********************************************************************************************************/
+/*
+ * retourne true si le type est numerique
+ */
+ bool UserCommands::NumericOrNot(vector<string> table_donne){
+ vector<int> table_final;
+  bool test=true;
+
+      for(unsigned int p=0;p<table_donne.size();p++){
+              int a;
+              bool ib =valide_entier(table_donne[p],a);
+              cout<<ib;
+              if(ib==false)
+                      {test=false;
+                      break;}
+       }
+      return test;
+ }
+/*********************************************************************************************/
+ /**
+  * tri les donnes dans le cas ou les donnees sont de type numerique
+  */
+ vector<int>UserCommands::PrintNumericValuesTri(vector<string> table_donne)
+ {
+	 vector<int> table_final;
+	table_final=triTableau(table_donne, table_donne.size());
+   //affichage du tableau globale contenant tous les valeurs possibles de ce type
+       for(unsigned int k=0;k<table_final.size();k++)
+           { cout<<table_final[k]<<endl;}
+       return table_final;
+ }
 
 
-
-/***********************************************************************************************************/
+/*********************************************************************************************************/
 /*
 * fonction prend en parametre deux tableau
 * donne en resultat un tableau global contenant tout les elements

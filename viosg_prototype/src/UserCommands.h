@@ -37,6 +37,10 @@ private:
 	std::vector<std::string> testCommand( vector <string> table_gde, vector <string> table_tot);
 	std::vector<int> StringToInt( vector <string> tab);
 	bool valide_entier(string t,int &e);
+	 vector<int>PrintNumericValuesTri(vector<string> table_donne);
+    bool NumericOrNot(vector<string> table_donne);
+    void printvaleur();
+
 //std::vector<std::string> showValueMetadata(string type);
 
 
