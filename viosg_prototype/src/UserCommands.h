@@ -29,19 +29,17 @@ private:
 	void createColors();
 	void createStateSets();
 	void test();
-
-
 	void showHelp();
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
-
-
+	void transparenceTest();
+	void defaultTest();
 
 	osg::ref_ptr<osg::Group> root;
 	vector<osg::Material*> materials;
 	vector<osg::StateSet*> stateSetsColors;
-	osg::ref_ptr<osg::StateSet> stateSetDefault;
-	osg::ref_ptr<osg::StateSet> stateSetTransparent;
+	osg::StateSet* stateSetDefault;
+	osg::StateSet* stateSetTransparent;
 };
 
 #endif /* USERCOMMANDS_H_ */

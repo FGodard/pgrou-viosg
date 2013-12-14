@@ -12,7 +12,6 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	UserCommands::root=root;
 	createColors();
 	createStateSets();
-	//test();
 
 
 }
@@ -23,6 +22,11 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 void UserCommands::executeCommand(string command){
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
+	if(command.compare("setTransparence")==0) {transparenceTest();return;}
+
+
+	if(command.compare("backToDefault")==0) {defaultTest();return;}
+
 	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
 }
@@ -44,45 +48,58 @@ void UserCommands::createColors(){
 
 
 	for(unsigned int i=0;i<9;i++){
-		osg::ref_ptr<osg::Material>material(new osg::Material);
+		osg::Material* material = new osg::Material;
 		material->setDiffuse(osg::Material::FRONT_AND_BACK,colors->at(i));
-		materials.push_back(material.get());
+		materials.push_back(material);
 	}
 
 }
 
 void UserCommands::createStateSets(){
 
+
+	osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
+
 	//StateSet par défault
 	stateSetDefault=new osg::StateSet;
+	stateSetDefault->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+    stateSetDefault->setAttributeAndModes(bf, osg::StateAttribute::OFF);
+
 	//StateSet Transparence
 	stateSetTransparent=new osg::StateSet;
-
-
-	osg::ref_ptr<osg::BlendFunc> bf(new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA ));
-	stateSetTransparent->setAttributeAndModes(bf);
+	osg::Material* material = new osg::Material;
+	 material->setAlpha(osg::Material::FRONT_AND_BACK, 0.1);
+	 stateSetTransparent->setAttribute(material);
+	stateSetTransparent->setAttributeAndModes(bf, osg::StateAttribute::ON);
 
 	//StateSetColors
-	cout<<materials.size()<<endl;
 	for(unsigned int i=0;i<9;i++){
-		osg::ref_ptr<osg::StateSet>stateSet(new osg::StateSet);
-			stateSet->setAttribute(materials[0]);
+		osg::StateSet* stateSet = new osg::StateSet;
+			stateSet->setAttribute(materials[i]);
+			stateSetsColors.push_back(stateSet);
 		}
-
-
 }
 
 
-void UserCommands::test(){
-	/*
+void UserCommands::transparenceTest(){
+
 	 GeodeFinder geodeFinder;
 	 root->accept(geodeFinder);
 	 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
-	 for(unsigned int i=0;i<geodes.size();i++){
-	                geodes[i]->setStateSet(stateSetsColors[0]);
-	        }
-	        */
+	 for(unsigned int i=0;i<geodes.size();i++)
+	                geodes[i]->setStateSet(stateSetTransparent);
+
+}
+
+void UserCommands::defaultTest(){
+	GeodeFinder geodeFinder;
+		 root->accept(geodeFinder);
+		 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+		 for(unsigned int i=0;i<geodes.size();i++)
+		                geodes[i]->setStateSet(stateSetDefault);
+
 
 }
 
