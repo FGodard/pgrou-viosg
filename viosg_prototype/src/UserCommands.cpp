@@ -55,7 +55,24 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 
 	bool UserCommands::testTypeValue(string type,string value){
 
-		//TODO fonction wafa qui retourne les valeurs de chaque type
+		vector <string> metadataValues=getValues(type);
+
+		bool find = false;
+		unsigned int i=0;
+		while (!find && i<metadataValues.size()){
+				if(metadataValues.at(i).compare(value)==0){
+					find=true;
+				}
+				else {
+					   i++;
+					  }
+		 }
+		//si tout le parcour effectué et que la valeur n existe pas => erreur
+			if(!find){
+				cout<<"**** ERROR : invalid value for the type: '"<<type<<"'"<<endl;
+				cout<<"Type printValue ["<<type<<"] to see which values you can select"<<endl;
+				return false;
+				}
 
 		return true;
 	}
