@@ -5,12 +5,17 @@
  *      Author: blam
  */
 
+//CIN 08754170
+
+//INSCRIPTION 3307
+
 #include "UserCommands.h"
 
 #include <Geode>
 #include <ref_ptr>
 #include <vector>
 #include <list>
+
 using namespace std;
 
 UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
@@ -54,7 +59,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	{
 		//TODO Types vector of all types
 		vector <string> metadataTypes=getTypes();
-
+		metadataTypes.push_back("1999");
 		vector <string> cmd;
 		cmd.push_back("help");
 		cmd.push_back("printAll");
@@ -141,12 +146,17 @@ void UserCommands::executeCommand(string command){
 					}
 			return;
 			}
-		//TODO les autres commandes
-		/**
+
+		//afficher en transparence
+		if(_command[0].compare("showTransparence")==0){
+			showTransparence(_command[1],_command[2]);
+		}
+
+			/**
 				cmd.push_back("showLegend");
 				cmd.push_back("showColor");
 				cmd.push_back("showReset");
-				cmd.push_back("showTransparence");
+
 		 */
 		}
 	else{
@@ -331,6 +341,52 @@ void UserCommands::printOneMetadata(osg::Object* osgObject,string meta){
 			cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;
 			}
 		}
+}
+
+//Pour une géode donnée, il renvoit la valeur de la clé passée en paramètre
+string UserCommands::valueOfKey(osg::Object* osgObject, std::string key){
+        osg::ref_ptr<Metadata> metadata =
+                        dynamic_cast<Metadata*> (osgObject->getUserData());
+        if(metadata)
+        {
+                citygml::AttributesMap::const_iterator iterator;
+                for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+                {
+                        std::string test=iterator->first;
+                        std::string test2=iterator->second;
+
+                        if (test.compare(key)==0)
+                                return test2;
+                }
+        }
+        return "";
+}
+
+
+/**
+ *
+ * Met en transparence les géodes ne correspondant pas au couple (clé,valeur) donné en paramètre
+ */
+
+//
+void UserCommands::showTransparence(string key, string value){
+        GeodeFinder geodeFinder;
+                root->accept(geodeFinder);
+                vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+                for(unsigned int i=0;i<geodes.size();i++){
+                       string test =valueOfKey(geodes[i],key);
+
+                       osg::ref_ptr<osg::Material> material = new osg::Material;
+
+                        material->setAlpha(osg::Material::FRONT_AND_BACK, 0.1);
+                        osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
+
+                                        if (test!=value){
+                                        geodes[i]->getOrCreateStateSet()->setAttributeAndModes(material.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+                                        geodes[i]->getOrCreateStateSet()->setAttributeAndModes(bf);
+                                        }
+}
 }
 
 

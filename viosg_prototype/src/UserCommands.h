@@ -9,6 +9,10 @@
 #define USERCOMMANDS_H_
 
 #include <osg/Group>
+#include <osg/BlendFunc>
+#include <osg/BlendColor>
+#include <osg/Material>
+#include <osg/Depth>
 #include <string>
 #include <iostream>
 
@@ -32,8 +36,11 @@ private:
 	vector <string>showTypeMetadata(osg::Object* object);
 	void showType();
 	bool testCommand( vector <string> options );
-	void printOneMetadata(osg::Object* object, std::string meta);
+	void printOneMetadata(osg::Object* object,string type);
 	void printAMetadata(vector <string> meta);
+	void showTransparence(string type, string value);
+	string valueOfKey(osg::Object* osgObject,string type);
+	vector <string> showValues(string type);
 
 };
 
