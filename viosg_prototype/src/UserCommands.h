@@ -25,8 +25,8 @@ private:
 	void showHelp();
 	void showAllMetadata();
 	void showAllTypeMetadata();
-	//affiche tous les types
-	void showType();
+	//affiche tous les types dan un tableau
+	std::vector<std::string> showType();
 	//affiche tous les valeurs possibles pour un type choisie
 	void showValues();
 	void showMetadata(osg::Object* object);
@@ -36,6 +36,7 @@ private:
 	std::vector<std::string> showValueMetadata(osg::Object* osgObject, string type);
 	std::vector<std::string> testCommand( vector <string> table_gde, vector <string> table_tot);
 	std::vector<int> StringToInt( vector <string> tab);
+	bool valide_entier(string t,int &e);
 
 
 };

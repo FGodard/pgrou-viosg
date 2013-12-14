@@ -30,10 +30,11 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root)
  */
 /*******************************************************************************************/
 void UserCommands::executeCommand(string command){
+	std::vector<std::string> tab;
 	if(command.compare("help")==0){showHelp();return;}
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
 	if(command.compare("showAllType")==0) {showAllTypeMetadata();return;}
-	if(command.compare("showAllTypeMetadata")==0) {showType();return;}
+	if(command.compare("showAllTypeMetadata")==0) {tab=showType();return;}
 	if(command.compare("Valeur")==0) {showValues();return;}
 	//Si aucune commande trouvée
 	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
@@ -90,7 +91,7 @@ for(unsigned int i=0;i<geodes.size();i++)
 /**
  * void permettant de trouver la liste final de tous les types de metadonnees possibles
  */
-void UserCommands::showType(){
+std::vector<std::string> UserCommands::showType(){
 	cout<<endl<<"AFFICHAGE DES TYPES POSSIBLES"<<endl;
 		GeodeFinder geodeFinder;
 		vector <std::string> table_geode , table_globale;
@@ -123,10 +124,32 @@ void UserCommands::showType(){
          for(unsigned int k=0;k<table_globale.size();k++)
     	 {cout<<table_globale[k]<<endl;}
          cout<<table_globale.size()<<endl;
+         return table_globale;
+}
+/**************************************************************************************************************/
+/*
+ * determiner le type d'une valeur passé en parametre
+ * retourne unboolean
+ * true si le type est numeirque
+ * false sinon
+ */
+bool UserCommands::valide_entier(string t,int &e)
+{
+    bool valide=true;
+    int i=0;
+    e=0;
+    if (t[0]<'1' || t[0]>'9') valide = false;
+
+    while (valide && t[i]!='\0')
+    {
+        if (t[i]>='0' && t[i]<='9') { e = 10*e + (t[i]-'0'); i++; }
+        else valide = false;
+    }
+    return valide;
 }
 /****************************************************************************************************/
 void UserCommands::showValues(){
-	string type ="yearOfConstruction";
+	string type ="name";
 	GeodeFinder geodeFinder;
 		vector <std::string> table_valeur_geode , table_donne ;
 		vector<int>table_final;
@@ -141,11 +164,27 @@ void UserCommands::showValues(){
     	 //parcours de la table de chaque geode pour verifier si cette valeur existe deja ou non
     	 table_donne=testCommand(table_valeur_geode, table_donne);
          }
-       table_final=triTableau(table_donne, table_donne.size());
+        bool test=true;
+        for(unsigned int p=0;p<table_donne.size();p++){
+        	int a;
+        	bool ib =valide_entier(table_donne[p],a);
+        	cout<<ib;
+        	if(ib==false)
+        		{test=false;
+        		break;}
+         }
+        if(test==true)
+        {  	table_final=triTableau(table_donne, table_donne.size());
      //affichage du tableau globale contenant tous les valeurs possibles de ce type
          for(unsigned int k=0;k<table_final.size();k++)
     	 {cout<<table_final[k]<<endl;}
-         cout<<table_final.size()<<endl;
+         cout<<table_final.size()<<endl;}
+        else{
+        	for(unsigned int k=0;k<table_donne.size();k++)
+        	    	 {cout<<table_donne[k]<<endl;}
+
+        }
+
 }
 /***********************************************************************************************************/
 /*
@@ -198,10 +237,14 @@ int x;
 cout<<tab.size()<<endl;
 	for(unsigned int i=0;i<tab.size();i++)
 	{
-		string myStream = tab[i];
-		istringstream buffer(myStream);
-		buffer >> x;
-		tableau.push_back(x);
+		try {
+			string myStream = tab[i];
+			istringstream buffer(myStream);
+			buffer >> x;
+			tableau.push_back(x);
+		} catch (exception& e) {
+			cout<<"type non numeric"<<endl;
+		}
 	}
 	return tableau;
 }
@@ -264,4 +307,5 @@ std::vector<std::string> UserCommands::showTypeMetadata(osg::Object* osgObject)
 		cout<<endl;
 		return tab ;
 }
+
 
