@@ -34,7 +34,7 @@ bool is_readable( const std::string & file )
 	if(fichier.fail()){
 		cout<<"**** ERROR : " << file<<" no such file or directory "<<endl;
 	}
-    return (!fichier.fail() && (ext==".gml") );
+    return (!fichier.fail() && ((ext==".gml")||(ext==".citygml")) );
 }
 
 int main(int argc, char** argv )
