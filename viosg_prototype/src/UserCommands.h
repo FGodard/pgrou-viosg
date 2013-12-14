@@ -33,7 +33,7 @@ private:
 	void printHelp();
 	void printAllMetadata();
 	void printType();
-	void printValues();
+	void printValues(string type);
 	void printAMetadata(vector <string> meta);
 
 	void showTransparence(string type, string value);
@@ -57,9 +57,11 @@ private:
 
 	void printOneMetadata(osg::Object* object,string type);
 	void printMetadata(osg::Object* object);
-
+	vector <string>getValues(string type);
 	bool testTypeValue(string type,string value);
 
+	vector<string> showValueMetadata(osg::Object* osgObject, string type);
+	vector<string>testUnic( vector <string> table_gde, vector <string> table_tot);
 };
 
 #endif /* USERCOMMANDS_H_ */

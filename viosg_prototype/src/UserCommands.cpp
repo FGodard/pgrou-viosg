@@ -99,7 +99,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		cmd.push_back("help");
 		cmd.push_back("printAll");
 		cmd.push_back("printType");
-		cmd.push_back("printValues");
+		cmd.push_back("printValue");
 		cmd.push_back("print");
 		cmd.push_back("showLegend");
 		cmd.push_back("showColor");
@@ -151,12 +151,21 @@ void UserCommands::executeCommand(string command){
 		//commande d'entrée: printType => afficher tout les types existant dans le fichier
 		if (_command[0].compare("printType")==0 && _command.size()==1){printType();return;}
 
-		//commande d'entrée: printValues => afficher toutes les valeurs existantes
-		if (_command[0].compare("printValues")==0 && _command.size()==1){
-			cout<< "ici appel de la methode print values"<<endl;
-			//printValues();
+		//commande d'entrée: printValue => afficher toutes les valeurs existantes
+
+		if (_command[0].compare("printValue")==0){
+			if(_command.size()==1){
+				cout<<"**** ERROR : "<<"printValue Command needs one argument"<<endl;
+				}
+			else{
+					bool ok=testType(_command[1]);
+					if (ok){
+							printValues(_command[1]);
+							}
+				}
 			return;
-			}
+		}
+
 
 		if(command.compare("backToDefault")==0) {
 			cout<<"ici appel de la fonction default test"<<endl;
@@ -233,16 +242,15 @@ void UserCommands::printType(){
 
 }
 
-void UserCommands::printValues(){
+void UserCommands::printValues(string type){
 
 	cout<<" ______________________________________________________________________________________"<<endl;
-	cout<<"|                     DISPLAY EXISTING Values FOR EACH TYPE                            |"<<endl;
+	cout<<"|                     DISPLAY EXISTING VALUES FOR SELECTED TYPE                        |"<<endl;
 	cout<<"|______________________________________________________________________________________|"<<endl;
 
-	//TODO Types vector of all values
-//		vector <string> metadataVAlues=getValues();
-//		for(unsigned int k=0;k<metadataValues.size();k++)
-//	            {cout<<"\t"<<metadataValues[k]<<endl;}
+		vector <string> metadataValues=getValues(type);
+		for(unsigned int k=0;k<metadataValues.size();k++)
+	            {cout<<"\t"<<metadataValues[k]<<endl;}
 
 }
 
@@ -313,7 +321,7 @@ void UserCommands::printHelp(){
 	cout<<"|__________________________|___________________________________________________________|"<<endl;
 	cout<<"| help                     |   Open the user guide                                     |"<<endl;
 	cout<<"| printAll                 |   Show all metadata stored on all geodes                  |"<<endl;
-	cout<<"| printValues              |   Show all values                                         |"<<endl;
+	cout<<"| printValue [TYPE]        |   Show all values                                         |"<<endl;
 	cout<<"| printType                |   Show types of metadata stored on all geodes             |"<<endl;
 	cout<<"| print [TYPE]             |   Show optional informations stored on all geodes         |"<<endl;
 	cout<<"|                          |     --you can select more than one TYPE--                 |"<<endl;
@@ -462,4 +470,69 @@ void UserCommands::showTransparence(string key, string value){
                                         geodes[i]->getOrCreateStateSet()->setAttributeAndModes(bf);
                                         }
 }
+}
+
+/*
+* fonction prend en parametre deux tableau
+* donne en resultat un tableau global contenant tout les elements
+* */
+vector<string>UserCommands::testUnic( vector <string> table_gde, vector <string> table_tot){
+         for(unsigned int j=0;j<table_gde.size();j++){
+                  bool find=false;
+                  unsigned int i=0;
+                  while (!find && i<table_tot.size()){
+                          //comparaison entre se qui existe et la nouvelle valeur dans la table de chaque geode
+                          if(table_tot.at(i).compare(table_gde[j])==0){
+                                  find = true;
+                          }
+                          else {
+                                  i++;
+                          }
+                  }
+                  //si c'est une nouvelle valeur on doit l'ajouter à la fin du tableau de donnees
+                  if(!find){ table_tot.push_back(table_gde[j]);}
+         }
+         return table_tot;
+}
+
+vector<string>UserCommands::getValues(string type){
+
+        GeodeFinder geodeFinder;
+                vector <std::string> table_donne ;
+                vector<int>table_final;
+                root->accept(geodeFinder);
+                vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+        for(unsigned int p=0;p<geodes.size();p++){
+
+             vector <std::string> table_valeur_geode ;
+             //creation de table contenant les valeurs à chaque fois
+             table_valeur_geode=showValueMetadata(geodes[p],type);
+             //parcours de la table de chaque geode pour verifier si cette valeur existe deja ou non
+             table_donne=testUnic(table_valeur_geode, table_donne);
+         }
+
+        return table_donne;
+}
+
+/** retourne un tableau de donnees
+* fonction qui retourne les donnees de toutes les geodes selon le type choisie qui est passé en parametre
+* sous forme d'un tableau qui sera ensuite stocker en tant que table_geode_donnees
+*/
+vector<string> UserCommands::showValueMetadata(osg::Object* osgObject, string type)
+{
+
+        osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (osgObject->getUserData() );
+    vector <std::string> tab;
+        if(metadata)
+                {
+                citygml::AttributesMap::const_iterator iterator;
+                //trouver les donnees d'un type donne
+         for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+                 // trouver les donnees de ce type
+         { if (iterator->first.compare(type)==0)
+                 tab.push_back(iterator->second);
+       }
+         }
+                return tab ;
 }
