@@ -32,13 +32,16 @@ private:
 	void showHelp();
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
+	void updateGeodeColor(osg::Geode*,int color);
+	void updateGeodeTransparency(osg::Geode*,bool isTransparent);
 	void transparenceTest();
 	void defaultTest();
+	void blueTest();
 
 	osg::ref_ptr<osg::Group> root;
 	vector<osg::Material*> materials;
 	vector<osg::StateSet*> stateSetsColors;
-	osg::StateSet* stateSetDefault;
+
 	osg::StateSet* stateSetTransparent;
 };
 

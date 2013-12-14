@@ -24,7 +24,7 @@ void UserCommands::executeCommand(string command){
 	if(command.compare("showAll")==0) {showAllMetadata();return;}
 	if(command.compare("setTransparence")==0) {transparenceTest();return;}
 
-
+	if(command.compare("setBlue")==0) {blueTest();return;}
 	if(command.compare("backToDefault")==0) {defaultTest();return;}
 
 	//Si aucune commande trouvée
@@ -60,10 +60,7 @@ void UserCommands::createStateSets(){
 
 	osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
 
-	//StateSet par défault
-	stateSetDefault=new osg::StateSet;
-	stateSetDefault->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-    stateSetDefault->setAttributeAndModes(bf, osg::StateAttribute::OFF);
+
 
 	//StateSet Transparence
 	stateSetTransparent=new osg::StateSet;
@@ -73,6 +70,7 @@ void UserCommands::createStateSets(){
 	stateSetTransparent->setAttributeAndModes(bf, osg::StateAttribute::ON);
 
 	//StateSetColors
+	stateSetsColors.push_back(new osg::StateSet);
 	for(unsigned int i=0;i<9;i++){
 		osg::StateSet* stateSet = new osg::StateSet;
 			stateSet->setAttribute(materials[i]);
@@ -98,10 +96,18 @@ void UserCommands::defaultTest(){
 		 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 
 		 for(unsigned int i=0;i<geodes.size();i++)
-		                geodes[i]->setStateSet(stateSetDefault);
-
-
+		                geodes[i]->setStateSet(stateSetsColors[0]);
 }
+
+void UserCommands::blueTest(){
+	GeodeFinder geodeFinder;
+		 root->accept(geodeFinder);
+		 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+		 for(unsigned int i=0;i<geodes.size();i++)
+		                geodes[i]->setStateSet(stateSetsColors[1]);
+}
+
 
 
 void UserCommands::showHelp(){

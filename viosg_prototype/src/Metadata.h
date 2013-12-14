@@ -22,6 +22,8 @@ public:
 	Metadata(const citygml::AttributesMap& _attributes):attributes(_attributes){};
 	//Hashmap contenant les métadonnéees
 	const citygml::AttributesMap& attributes;
+	bool isTransparent;
+	int colorState;
 };
 
 #endif /* METADATA_H_ */
