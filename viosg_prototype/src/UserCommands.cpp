@@ -50,7 +50,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 
 
 	/**
-	 * test si la valeur donnée existe pour ce type
+	 * test si la valeur donnée existe pour le type saisis
 	 */
 
 	bool UserCommands::testTypeValue(string type,string value){
@@ -70,7 +70,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		//si tout le parcour effectué et que la valeur n existe pas => erreur
 			if(!find){
 				cout<<"**** ERROR : invalid value for the type: '"<<type<<"'"<<endl;
-				cout<<"Type printValue ["<<type<<"] to see which values you can select"<<endl;
+				cout<<"Type 'printValue "<<type<<"' to see which values you can select"<<endl;
 				return false;
 				}
 
@@ -78,11 +78,10 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	}
 
 
-
 	/**
 	 * Test sur le type
 	 */
-		bool UserCommands::testType(string type){
+	bool UserCommands::testType(string type){
 
 			//TODO metadataTypes vector of all types in class userCommands
 			vector <string> metadataTypes=getTypes();
@@ -146,7 +145,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 /**
  * Execute la commande entrée dans le terminal
  */
-void UserCommands::executeCommand(string command){
+	void UserCommands::executeCommand(string command){
 
 	//lectute de la commande
 	vector <string> _command=readCommand(command);
@@ -259,15 +258,29 @@ void UserCommands::printType(){
 
 }
 
+
+
 void UserCommands::printValues(string type){
 
 	cout<<" ______________________________________________________________________________________"<<endl;
 	cout<<"|                     DISPLAY EXISTING VALUES FOR SELECTED TYPE                        |"<<endl;
 	cout<<"|______________________________________________________________________________________|"<<endl;
 
-		vector <string> metadataValues=getValues(type);
+	vector<int> table2;
+	vector<string> metadataValues=getValues(type);
+	bool b=NumericOrNot(metadataValues);
+	if(b==true){
+		table2=triTableau(metadataValues);
+		for(unsigned int k=0;k<table2.size();k++)
+		            {cout<<"\t"<<table2[k]<<endl;}
+	}
+	else{
 		for(unsigned int k=0;k<metadataValues.size();k++)
-	            {cout<<"\t"<<metadataValues[k]<<endl;}
+		            {cout<<"\t"<<metadataValues[k]<<endl;}
+	}
+
+
+
 
 }
 
@@ -512,6 +525,11 @@ vector<string>UserCommands::testUnic( vector <string> table_gde, vector <string>
          return table_tot;
 }
 
+/**
+ * valeurs d'un type donnée
+ */
+
+
 vector<string>UserCommands::getValues(string type){
 
         GeodeFinder geodeFinder;
@@ -531,6 +549,87 @@ vector<string>UserCommands::getValues(string type){
 
         return table_donne;
 }
+
+
+
+/***********************************************************************************************************/
+/*
+* retourne true si le type est numerique
+*/
+ bool UserCommands::NumericOrNot(vector<string> table_donne){
+ vector<int> table_final;
+  bool test=true;
+
+      for(unsigned int p=0;p<table_donne.size();p++){
+              int a;
+              bool ib =valide_entier(table_donne[p],a);
+              if(ib==false)
+                      {test=false;
+                      break;}
+       }
+      return test;
+ }
+
+
+ /*
+ * Convertin d'un tableau de chaine de caractaire en tableau d'entier
+ */
+ std::vector<int>UserCommands::StringToInt( vector <string> tab){
+	 vector<int> tableau;
+	 int x;
+     for(unsigned int i=0;i<tab.size();i++)
+         {
+              string myStream = tab[i];
+              istringstream buffer(myStream);
+              buffer >> x;
+              tableau.push_back(x);
+
+         }
+     return tableau;
+ }
+
+ /*
+ * fonction tri dans le cas des valeurs numeriques
+ */
+ std::vector<int>UserCommands::triTableau( vector <string> tab){
+         vector<int> tabl;
+
+         //changer le type du tableau en tableau de int
+         tabl=StringToInt(tab);
+
+         for(unsigned int i = 0; i < tab.size(); i++) {
+        	 for(unsigned int i = 0; i < tab.size(); i++)
+        		 if(tabl[i] > tabl[i+1])
+        			 std::swap(tabl[i], tabl[i+1]);
+         }
+         return tabl;
+ }
+
+
+
+ /*
+ * determiner le type d'une valeur passé en parametre
+ * retourne unboolean
+ * true si le type est numeirque
+ * false sinon
+ */
+ bool UserCommands::valide_entier(string t,int &e)
+ {
+     bool valide=true;
+     int i=0;
+     e=0;
+     if (t[0]<'1' || t[0]>'9') valide = false;
+
+     while (valide && t[i]!='\0')
+     {
+         if (t[i]>='0' && t[i]<='9') { e = 10*e + (t[i]-'0'); i++; }
+         else valide = false;
+     }
+     return valide;
+ }
+
+
+
 
 /** retourne un tableau de donnees
 * fonction qui retourne les donnees de toutes les geodes selon le type choisie qui est passé en parametre

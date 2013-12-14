@@ -62,6 +62,13 @@ private:
 
 	vector<string> showValueMetadata(osg::Object* osgObject, string type);
 	vector<string>testUnic( vector <string> table_gde, vector <string> table_tot);
+
+	 std::vector<int> triTableau( vector <string> tab);
+	 std::vector<int> StringToInt( vector <string> tab);
+     bool valide_entier(string t,int &e);
+     vector<int>NumericValuesTri(vector<string> table_donne);
+     bool NumericOrNot(vector<string> table_donne);
+
 };
 
 #endif /* USERCOMMANDS_H_ */
