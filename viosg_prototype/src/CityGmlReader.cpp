@@ -131,8 +131,8 @@ bool CityGmlReader::createCityObjectGeode( const citygml::CityObject* object, os
  */
 void CityGmlReader::fetchCityObjectMetadata(const citygml::CityObject* object, osg::ref_ptr<osg::Geode> geode){
 	const AttributesMap& attributes=object->getAttributes();
-	Metadata* metadata=new Metadata(attributes);
-	geode->setUserData(metadata);
+	GeodeData* geodeData=new GeodeData(attributes);
+	geode->setUserData(geodeData);
 }
 
 /**

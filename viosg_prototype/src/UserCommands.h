@@ -17,7 +17,7 @@
 #include <osg/Depth>
 #include <osg/StateSet>
 
-#include "Metadata.h"
+#include "GeodeData.h"
 #include "GeodeFinder.h"
 #include "citygml.h"
 
@@ -32,14 +32,14 @@ private:
 
 	//Fonctions d'affichage des métadonnées sur la scène
 	void showMetadataByTransparency(const string key, const string value);
-	void updateTransparencyState(Metadata* metadata, const string key,const string value);
+	void updateTransparencyState(GeodeData* geodeData, const string key,const string value);
 
 	void showMetadataByColor(const string key);
-	void updateColorState(Metadata* metadata, const string key);
+	void updateColorState(GeodeData* geodeData, const string key);
 	int calculateColorState(const string key, const string value);
 
 	void showMetadataReset();
-	void updateStateSet(osg::Geode* geode, Metadata* metadata);
+	void updateStateSet(osg::Geode* geode, GeodeData* geodeData);
 
 
 	void test();

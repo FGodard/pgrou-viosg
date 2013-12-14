@@ -1,12 +1,12 @@
 /*
- * Metadata.h
+ * GeodeData.h
  *
  *  Created on: 6 nov. 2013
  *      Author: blam
  */
 
-#ifndef METADATA_H_
-#define METADATA_H_
+#ifndef GEODEDATA_H_
+#define GEODEDATA_H_
 
 #include <algorithm>
 #include <cctype>
@@ -17,9 +17,9 @@
  * Classe pour stocker les attributs des métadonnées
  * Dérive de osg::Referenced pour pouvoir les gérer depuis les objets osg avec set/getUserData
  */
-class Metadata :public osg::Referenced {
+class GeodeData :public osg::Referenced {
 public:
-	Metadata(const citygml::AttributesMap& _attributes):attributes(_attributes){
+	GeodeData(const citygml::AttributesMap& _attributes):attributes(_attributes){
 		isTransparent=false;
 		colorState=0;
 	};
@@ -29,4 +29,4 @@ public:
 	int colorState;
 };
 
-#endif /* METADATA_H_ */
+#endif /* GEODEDATA_H_ */

@@ -85,7 +85,7 @@ void UserCommands::executeCommand(string command){
 void UserCommands::showMetadataByTransparency(const string key,const string value){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 	for(unsigned int i=0;i<geodes.size();i++){
-		osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (geodes[i]->getUserData() );
+		osg::ref_ptr<GeodeData> metadata =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 		if(metadata){
 			updateTransparencyState(metadata, key,value);
 			updateStateSet(geodes[i],metadata);
@@ -93,7 +93,7 @@ void UserCommands::showMetadataByTransparency(const string key,const string valu
 	}
 }
 
-void UserCommands::updateTransparencyState(Metadata* metadata, const string key,const string value){
+void UserCommands::updateTransparencyState(GeodeData* metadata, const string key,const string value){
 	citygml::AttributesMap::const_iterator iterator;
 	if((iterator=metadata->attributes.find(key))!=metadata->attributes.end()&&
 					iterator->second.compare(value)==0)
@@ -107,20 +107,20 @@ void UserCommands::updateTransparencyState(Metadata* metadata, const string key,
 void UserCommands::showMetadataByColor(const string key){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 		for(unsigned int i=0;i<geodes.size();i++){
-			osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (geodes[i]->getUserData() );
+			osg::ref_ptr<GeodeData> metadata =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 			if(metadata){
 				updateColorState(metadata, key);
 				updateStateSet(geodes[i],metadata);
 			}
 		}
 }
-void UserCommands::updateColorState(Metadata* metadata, const string key){
+void UserCommands::updateColorState(GeodeData* geodeData, const string key){
 	citygml::AttributesMap::const_iterator iterator;
-		if((iterator=metadata->attributes.find(key))!=metadata->attributes.end())
+		if((iterator=geodeData->attributes.find(key))!=geodeData->attributes.end())
 				{
-					metadata->colorState=calculateColorState(key, iterator->second);
+					geodeData->colorState=calculateColorState(key, iterator->second);
 				}else{
-					metadata->colorState=0;
+					geodeData->colorState=0;
 				}
 }
 
@@ -134,16 +134,16 @@ int UserCommands::calculateColorState(const string key,const string value){
 void UserCommands::showMetadataReset(){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 			for(unsigned int i=0;i<geodes.size();i++){
-				osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (geodes[i]->getUserData() );
-				if(metadata){
-					metadata->isTransparent=false;
-					metadata->colorState=0;
-					updateStateSet(geodes[i],metadata);
+				osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
+				if(geodeData){
+					geodeData->isTransparent=false;
+					geodeData->colorState=0;
+					updateStateSet(geodes[i],geodeData);
 				}
 			}
 }
 
-void UserCommands::updateStateSet(osg::Geode* geode,Metadata* metadata){
+void UserCommands::updateStateSet(osg::Geode* geode,GeodeData* metadata){
 	if(metadata->isTransparent==true){
 		geode->setStateSet(stateSetTransparent);
 	}else{
@@ -186,13 +186,13 @@ void UserCommands::showAllMetadata(){
  */
 void UserCommands::showMetadata(osg::Object* osgObject){
 	//On récupère le userdata de l'object
-	osg::ref_ptr<Metadata> metadata =
-			dynamic_cast<Metadata*> (osgObject->getUserData() );
+	osg::ref_ptr<GeodeData> geodeData =
+			dynamic_cast<GeodeData*> (osgObject->getUserData() );
 
-	if(metadata)
+	if(geodeData)
 	{
 		citygml::AttributesMap::const_iterator iterator;
-		for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+		for (iterator=geodeData->attributes.begin(); iterator != geodeData->attributes.end();++iterator)
 		{
 			//On affiche le nom et la valeur
 			cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;

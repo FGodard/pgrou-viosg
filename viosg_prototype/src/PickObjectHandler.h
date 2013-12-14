@@ -14,7 +14,7 @@
 #include <iostream>
 
 #include "citygml.h"
-#include "Metadata.h"
+#include "GeodeData.h"
 
 class IntersectionSelector{
 public:

@@ -11,14 +11,14 @@ bool IntersectionSelector::handle(Intersection &intersection)
 {
 	osg::NodePath &nodes = intersection.nodePath;
 	//TODO Verifier que nodes.size-1 est bien la géode
-	osg::ref_ptr<Metadata> metadata =
-			dynamic_cast<Metadata*> (nodes[nodes.size()-1]->getUserData() );
+	osg::ref_ptr<GeodeData> geodeData =
+			dynamic_cast<GeodeData*> (nodes[nodes.size()-1]->getUserData() );
 
-	if(metadata)
+	if(geodeData)
 	{
 		cout<<"Objet trouvé:"<<endl;
 		AttributesMap::const_iterator iterator;
-		for (iterator=metadata->attributes.begin(); iterator != metadata->attributes.end();++iterator)
+		for (iterator=geodeData->attributes.begin(); iterator != geodeData->attributes.end();++iterator)
 		{
 			 std::cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;
 		}

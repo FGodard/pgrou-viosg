@@ -42,7 +42,7 @@
 #include <cctype>
 
 #include "citygml.h"
-#include "Metadata.h"
+#include "GeodeData.h"
 
 /**
  * Classe utilisée pour charger les fichiers citygml et générer un arbre de scène

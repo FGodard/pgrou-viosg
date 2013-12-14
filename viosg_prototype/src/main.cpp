@@ -6,7 +6,7 @@
 #include "PickObjectHandler.h"
 #include "UiThread.h"
 #include "UserCommands.h"
-
+#include "MetadataMap.h"
 using namespace std;
 using namespace citygml;
 
@@ -30,6 +30,7 @@ int main(int argc, char** argv )
 	osg::ref_ptr<osg::Group> root(new osg::Group);
 	root->addChild(cityGroup);
 	root->setDataVariance(osg::Object::DYNAMIC);
+
 	//CREATION DU VIEWER
 	osgViewer::Viewer viewer ;
 	viewer.setSceneData(root);
@@ -41,6 +42,7 @@ int main(int argc, char** argv )
 
 	//RENDER THREAD ET UI THREAD
 	UiThread::instance()->startThread();
+	MetadataMap* metadataMap=new MetadataMap(root);
 	UserCommands userCommands(root);
 	string command;
 	viewer.realize();
@@ -57,12 +59,10 @@ int main(int argc, char** argv )
 	UiThread::instance()->cancel();
 
 	cout<<"Exiting program"<<endl;
+
+	delete metadataMap;
 	return 0;
 }
-
-
-
-// -----FONCTIONS POUR RECUPERER LES DONNES DE LA SCENE ICI
 
 
 
