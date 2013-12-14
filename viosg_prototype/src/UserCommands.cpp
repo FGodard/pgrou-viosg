@@ -169,7 +169,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 
 		//commande d'entrée: printValue => afficher toutes les valeurs existantes
 
-		if (_command[0].compare("printValue")==0){
+		if (_command[0].compare("printValue")==0 && _command.size()==2){
 			if(_command.size()==1){
 				cout<<"**** ERROR : "<<"printValue Command needs one argument"<<endl;
 				}
@@ -232,7 +232,6 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		if(_command[0].compare("showTransparence")==0){
 			if(_command.size()==3){
 				bool  ok=testTypeValue(_command[1],_command[2]);
-				cout <<ok;
 				if (ok){showTransparence(_command[1],_command[2]);}
 				}
 				else{cout<<"**** ERROR : "<<"showTransparence Command needs two arguments"<<endl;}
@@ -278,9 +277,6 @@ void UserCommands::printValues(string type){
 		for(unsigned int k=0;k<metadataValues.size();k++)
 		            {cout<<"\t"<<metadataValues[k]<<endl;}
 	}
-
-
-
 
 }
 
@@ -408,6 +404,7 @@ void UserCommands::printAllMetadata(){
 				cout<<"\t"<<iterator->first<<":"<<iterator->second<<endl;
 			}
 			cout<<endl;
+
 		}
 }
 
