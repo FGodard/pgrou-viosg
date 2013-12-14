@@ -27,25 +27,38 @@ public:
 private:
 	vector <string> metadataTypes;
 	osg::ref_ptr<osg::Group> root;
-	void showHelp();
-	void printType();
+
+
+	//functions
+	void printHelp();
 	void printAllMetadata();
-	void printMetadata(osg::Object* object);
-	vector<string>readCommand(string command);
-	vector <string>getTypes();
-	vector <string>showTypeMetadata(osg::Object* object);
-	void showType();
-	bool testCommand(string command );
-	bool testType(string type);
-	void printOneMetadata(osg::Object* object,string type);
+	void printType();
+	void printValues();
 	void printAMetadata(vector <string> meta);
+
 	void showTransparence(string type, string value);
+
+	//TODO
+	//void showColor*****
+	//void backToDefult***
+	//void showLegend****
+
+
+	//dépendances
+
+	vector<string>readCommand(string command);
+	bool testCommand(string command );
+
+	vector <string>getTypes();
+	vector <string>getTypeMetadata(osg::Object* object);
+	bool testType(string type);
+
 	string valueOfKey(osg::Object* osgObject,string type);
-	vector <string> showValues(string type);
+
+	void printOneMetadata(osg::Object* object,string type);
+	void printMetadata(osg::Object* object);
 
 	bool testTypeValue(string type,string value);
-
-
 
 };
 

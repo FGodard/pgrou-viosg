@@ -135,7 +135,7 @@ void UserCommands::executeCommand(string command){
 	vector <string> _command=readCommand(command);
 
 	//commande entrée : help => afficher le menu principal
-	if(_command[0].compare("main")==0){showHelp();return;}
+	if(_command[0].compare("main")==0){printHelp();return;}
 
 	bool okToContinue=true;
 	//appel des fonctions test pour vérifier la commande
@@ -143,7 +143,7 @@ void UserCommands::executeCommand(string command){
 
 	if(okToContinue){
 		//commande entrée : help => afficher le menu help
-		if(_command[0].compare("help")==0 && _command.size()==1){showHelp();return;}
+		if(_command[0].compare("help")==0 && _command.size()==1){printHelp();return;}
 
 		//commande d'entrée: printAll => afficher toutes les metadonnées dans le ficher
 		if(_command[0].compare("printAll")==0 && _command.size()==1) {printAllMetadata();return;}
@@ -232,12 +232,29 @@ void UserCommands::printType(){
             {cout<<"\t"<<metadataTypes[k]<<endl;}
 
 }
+
+void UserCommands::printValues(){
+
+	cout<<" ______________________________________________________________________________________"<<endl;
+	cout<<"|                     DISPLAY EXISTING Values FOR EACH TYPE                            |"<<endl;
+	cout<<"|______________________________________________________________________________________|"<<endl;
+
+	//TODO Types vector of all values
+//		vector <string> metadataVAlues=getValues();
+//		for(unsigned int k=0;k<metadataValues.size();k++)
+//	            {cout<<"\t"<<metadataValues[k]<<endl;}
+
+}
+
+
+
+
 /** retourne un tableau de type
 * fonction qui retourne les types de donnees pour chaque geode
 * sous forme d'un tableau qui sera ensuite stocker en tant que table_geode
 */
 
-vector<string> UserCommands::showTypeMetadata(osg::Object* osgObject)
+vector<string> UserCommands::getTypeMetadata(osg::Object* osgObject)
 {        osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (osgObject->getUserData() );
     vector <string> tab;
         if(metadata)
@@ -250,25 +267,27 @@ vector<string> UserCommands::showTypeMetadata(osg::Object* osgObject)
 
                 return tab ;
 }
+
 vector <string> UserCommands::getTypes(){
 
-            GeodeFinder geodeFinder;
-            vector <std::string> table_geode , table_globale;
-            root->accept(geodeFinder);
-            vector<osg::Geode*> geodes=geodeFinder.getNodeList();
-            //initialisation de la table_globale par les types de la premieres geode
-     table_globale=showTypeMetadata(geodes[0]);
+     GeodeFinder geodeFinder;
+     vector <std::string> table_geode , table_globale;
+     root->accept(geodeFinder);
+     vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+     //initialisation de la table_globale par les types de la premieres geode
+     table_globale=getTypeMetadata(geodes[0]);
      //parcours de toutes les geodes
- for(unsigned int p=0;p<geodes.size();p++){
+     for(unsigned int p=0;p<geodes.size();p++){
          //creation de table contenant les types à chaque fois
-         table_geode=showTypeMetadata(geodes[p]);
+         table_geode=getTypeMetadata(geodes[p]);
          //parcours de la table de chaque geode pour verifier si ce type existe deja ou non
- for(unsigned int j=0;j<table_geode.size();j++){
-         bool find=false;
-         unsigned int i=0;
-         while (!find && i<table_globale.size()){
+         for(unsigned int j=0;j<table_geode.size();j++){
+        	 bool find=false;
+        	 unsigned int i=0;
+        	 	 while (!find && i<table_globale.size()){
                  //comparaison entre se qui existe et le type de la table de chaque geode
-                 if(table_globale.at(i).compare(table_geode[j])==0){
+        	 		 if(table_globale.at(i).compare(table_geode[j])==0){
                          find = true;
                  }
                  else {
@@ -283,7 +302,7 @@ vector <string> UserCommands::getTypes(){
 }
 
 
-void UserCommands::showHelp(){
+void UserCommands::printHelp(){
 
 	cout<<" ______________________________________________________________________________________"<<endl;
 	cout<<"|                                                                                      |"<<endl;
@@ -444,5 +463,3 @@ void UserCommands::showTransparence(string key, string value){
                                         }
 }
 }
-
-
