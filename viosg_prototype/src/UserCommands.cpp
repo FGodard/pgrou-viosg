@@ -5,9 +5,6 @@
  *      Author: blam
  */
 
-//CIN 08754170
-
-//INSCRIPTION 3307
 
 #include "UserCommands.h"
 
@@ -51,63 +48,47 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	return command_options;
 	}
 
-/**
- * Test sur la valeur
- */
-	bool UserCommands::testValue(string value ){
 
-		//TODO metadataTypes vector of all types in class userCommands
-		//vector <string> metadataValues=getValues();
+	/**
+	 * test si la valeur donnée existe pour ce type
+	 */
 
-		/*pour tester */
-		vector <string> metadataValues;
-		metadataValues.push_back("1999");
+	bool UserCommands::testTypeValue(string type,string value){
 
-		bool find = false;
-		unsigned int i=0;
-		while (!find && i<metadataValues.size()){
-			if(metadataValues.at(i).compare(value)==0){
-				find=true;
-			}
-				else {
-						i++;
-					  }
-		}
-		//si tout le parcour effectué et que la valeur n existe pas => erreur
-		if(!find){
-			cout<<"**** ERROR : invalid Value '"<<value<<"'"<<endl;
-			cout<<"Type 'printValues' to see which Values exists"<<endl;
-			return false;
-			}
-		return true ;
-		}
+		//TODO fonction wafa qui retourne les valeurs de chaque type
 
-/**
- * Test sur le type
- */
-	bool UserCommands::testType(string type){
-
-		//TODO metadataTypes vector of all types in class userCommands
-		vector <string> metadataTypes=getTypes();
-
-		bool find = false;
-		unsigned int i=0;
-		while (!find && i<metadataTypes.size()){
-				if(metadataTypes.at(i).compare(type)==0){
-					find=true;
-				}
-				else {
-					   i++;
-					  }
-		 }
-		//si tout le parcour effectué et que la valeur n existe pas => erreur
-			if(!find){
-				cout<<"**** ERROR : invalid Type '"<<type<<"'"<<endl;
-				cout<<"Type 'printType' to see which type exists"<<endl;
-				return false;
-				}
 		return true;
 	}
+
+
+
+	/**
+	 * Test sur le type
+	 */
+		bool UserCommands::testType(string type){
+
+			//TODO metadataTypes vector of all types in class userCommands
+			vector <string> metadataTypes=getTypes();
+
+			bool find = false;
+			unsigned int i=0;
+			while (!find && i<metadataTypes.size()){
+					if(metadataTypes.at(i).compare(type)==0){
+						find=true;
+					}
+					else {
+						   i++;
+						  }
+			 }
+			//si tout le parcour effectué et que la valeur n existe pas => erreur
+				if(!find){
+					cout<<"**** ERROR : invalid Type '"<<type<<"'"<<endl;
+					cout<<"Type 'printType' to see which type exists"<<endl;
+					return false;
+					}
+			return true;
+		}
+
 /**
  * Test sur la commande
  */
@@ -124,6 +105,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		cmd.push_back("showColor");
 		cmd.push_back("showReset");
 		cmd.push_back("showTransparence");
+		cmd.push_back("backToDefault");
 
 		bool find = false;
 		unsigned int i=0;
@@ -138,7 +120,6 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		//si tout le parcour effectué et que la valeur n existe pas => erreur
 			if(!find){
 				cout<<"**** ERROR : invalid Command '"<<command<<"'"<<endl;
-				cout<<"Type 'help' to see list of command"<<endl;
 				return false;
 				}
 		return true;
@@ -171,11 +152,27 @@ void UserCommands::executeCommand(string command){
 		if (_command[0].compare("printType")==0 && _command.size()==1){printType();return;}
 
 		//commande d'entrée: printValues => afficher toutes les valeurs existantes
-		//if (_command[0].compare("printValues")==0){printValues();return;}
+		if (_command[0].compare("printValues")==0 && _command.size()==1){
+			cout<< "ici appel de la methode print values"<<endl;
+			//printValues();
+			return;
+			}
+
+		if(command.compare("backToDefault")==0) {
+			cout<<"ici appel de la fonction default test"<<endl;
+			//defaultTest();
+			return;
+		}
+
+		if(_command[0].compare("showLegend")==0 && _command.size()==1) {
+			cout << "ici appel de show legend"<<endl;
+			//showLegend();
+			return;
+		}
 
 		if(_command[0].compare("print")==0){
 			if(_command.size()==1){
-				cout<<"**** ERROR : "<<"print Command needs at least one argement"<<endl;
+				cout<<"**** ERROR : "<<"print Command needs at least one argument"<<endl;
 				}
 				else{
 						bool  ok=true;
@@ -190,30 +187,35 @@ void UserCommands::executeCommand(string command){
 			return;
 			}
 
+		//
+		if (_command[0].compare("showColor")==0){
+			if(_command.size()==1){
+				cout<<"**** ERROR : "<<"showColor Command needs one argument"<<endl;
+				}
+			else{
+					bool ok=testType(_command[1]);
+					if (ok){
+							cout<<"ici appel de show color "<<endl;
+							//showColor(_command[1]);
+							}
+				}
+			return;
+		}
+
+
 		//commande d'entrée: showTransparence
 		if(_command[0].compare("showTransparence")==0){
-			if(_command.size()==1 || _command.size()>3){
-							cout<<"**** ERROR : "<<"showTransparence Command needs two argements"<<endl;
-							//cout<<"     showTransparence [TYPE] [VALUE]"<<endl;
-							}
-							else{
-									bool  ok=testType(_command[1])&& testValue(_command[2]);
-									if (ok){showTransparence(_command[1],_command[2]);}
-								}
-						return;
+			if(_command.size()==3){
+				bool  ok=testTypeValue(_command[1],_command[2]);
+				cout <<ok;
+				if (ok){showTransparence(_command[1],_command[2]);}
+				}
+				else{cout<<"**** ERROR : "<<"showTransparence Command needs two arguments"<<endl;}
+			return;
 		}
-
-			/**
-				cmd.push_back("showLegend");
-				cmd.push_back("showColor");
-				cmd.push_back("showReset");
-
-		 */
 		cout<<"**** ERROR : invalid Command '"<<command<<"'"<<endl;
-		cout<<"Type 'help' to see list of command"<<endl;
-		}
-
-
+	}
+		cout<<"Type 'help' to see list of command or close the viewer to exit the programm "<<endl;
 }
 /**
  * afficher tout les types de metadonnées existants
@@ -234,6 +236,7 @@ void UserCommands::printType(){
 * fonction qui retourne les types de donnees pour chaque geode
 * sous forme d'un tableau qui sera ensuite stocker en tant que table_geode
 */
+
 vector<string> UserCommands::showTypeMetadata(osg::Object* osgObject)
 {        osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (osgObject->getUserData() );
     vector <string> tab;
@@ -291,6 +294,7 @@ void UserCommands::showHelp(){
 	cout<<"|__________________________|___________________________________________________________|"<<endl;
 	cout<<"| help                     |   Open the user guide                                     |"<<endl;
 	cout<<"| printAll                 |   Show all metadata stored on all geodes                  |"<<endl;
+	cout<<"| printValues              |   Show all values                                         |"<<endl;
 	cout<<"| printType                |   Show types of metadata stored on all geodes             |"<<endl;
 	cout<<"| print [TYPE]             |   Show optional informations stored on all geodes         |"<<endl;
 	cout<<"|                          |     --you can select more than one TYPE--                 |"<<endl;
@@ -300,10 +304,10 @@ void UserCommands::showHelp(){
 	cout<<"|                  [OPTION]|                                                           |"<<endl;
 	cout<<"| showReset                |   *****                                                   |"<<endl;
 	cout<<"| showLegend               |   *****                                                   |"<<endl;
+	cout<<"| backToDefault            |   *****                                                   |"<<endl;
 	cout<<"|__________________________|___________________________________________________________|"<<endl;
 
 }
-
 
 /**
  * Affiche toutes les métadonnées présentes
@@ -440,3 +444,5 @@ void UserCommands::showTransparence(string key, string value){
                                         }
 }
 }
+
+

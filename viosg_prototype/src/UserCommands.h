@@ -37,12 +37,15 @@ private:
 	void showType();
 	bool testCommand(string command );
 	bool testType(string type);
-	bool testValue(string value);
 	void printOneMetadata(osg::Object* object,string type);
 	void printAMetadata(vector <string> meta);
 	void showTransparence(string type, string value);
 	string valueOfKey(osg::Object* osgObject,string type);
 	vector <string> showValues(string type);
+
+	bool testTypeValue(string type,string value);
+
+
 
 };
 
