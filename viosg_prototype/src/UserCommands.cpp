@@ -50,64 +50,97 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 		while (pos_end != string::npos);
 	return command_options;
 	}
-/**
- * test command: fonction pour tester si les commandes utilisateurs sont valides
- * la liste des commandes possibles est chargée à partir du ficher .gml  d'entrée
- */
 
-	bool UserCommands::testCommand( vector <string> options )
-	{
-		//TODO Types vector of all types
+/**
+ * Test sur la valeur
+ */
+	bool UserCommands::testValue(string value ){
+
+		//TODO metadataTypes vector of all types in class userCommands
+		//vector <string> metadataValues=getValues();
+
+		/*pour tester */
+		vector <string> metadataValues;
+		metadataValues.push_back("1999");
+
+		bool find = false;
+		unsigned int i=0;
+		while (!find && i<metadataValues.size()){
+			if(metadataValues.at(i).compare(value)==0){
+				find=true;
+			}
+				else {
+						i++;
+					  }
+		}
+		//si tout le parcour effectué et que la valeur n existe pas => erreur
+		if(!find){
+			cout<<"**** ERROR : invalid Value '"<<value<<"'"<<endl;
+			cout<<"Type 'printValues' to see which Values exists"<<endl;
+			return false;
+			}
+		return true ;
+		}
+
+/**
+ * Test sur le type
+ */
+	bool UserCommands::testType(string type){
+
+		//TODO metadataTypes vector of all types in class userCommands
 		vector <string> metadataTypes=getTypes();
-		metadataTypes.push_back("1999");
+
+		bool find = false;
+		unsigned int i=0;
+		while (!find && i<metadataTypes.size()){
+				if(metadataTypes.at(i).compare(type)==0){
+					find=true;
+				}
+				else {
+					   i++;
+					  }
+		 }
+		//si tout le parcour effectué et que la valeur n existe pas => erreur
+			if(!find){
+				cout<<"**** ERROR : invalid Type '"<<type<<"'"<<endl;
+				cout<<"Type 'printType' to see which type exists"<<endl;
+				return false;
+				}
+		return true;
+	}
+/**
+ * Test sur la commande
+ */
+	bool UserCommands::testCommand( string command )
+	{
+		//liste des commandes
 		vector <string> cmd;
 		cmd.push_back("help");
 		cmd.push_back("printAll");
 		cmd.push_back("printType");
+		cmd.push_back("printValues");
 		cmd.push_back("print");
 		cmd.push_back("showLegend");
 		cmd.push_back("showColor");
 		cmd.push_back("showReset");
 		cmd.push_back("showTransparence");
 
-		//test sur la commande
 		bool find = false;
 		unsigned int i=0;
-
 		while (!find && i<cmd.size()){
-			if(cmd.at(i).compare(options[0])==0){
+			if(cmd.at(i).compare(command)==0){
 				find=true;
-				}
-				else {
+			}
+			else {
 					i++;
-				  }
-			}
-		if(!find){
-			  cout<<"**** ERROR : invalid command '"<<options[0]<<"'"<<endl;
-			  return false;
-			}
-
-		if (options.size()>1){
-			for(unsigned int j=1;j<options.size();j++){
-			  bool find = false;
-			  unsigned int i=0;
-			  while (!find && i<metadataTypes.size()){
-				  if(metadataTypes.at(i).compare(options[j])==0){
-					  find=true;
-				  }
-				  else {
-					  i++;
-				  }
-			  }
-			  //si une commande n'existe pas dans la liste des commandes possible => quitter avec un message d'erreur
-			  if(!find){
-				  cout<<"**** ERROR : invalid type '"<<options[j]<<"'"<<endl;
-				  cout<<"Type 'printType' to see which options are available"<<endl;
-				  return false;
-			  }
-			 }
-		}
-
+				}
+		 }
+		//si tout le parcour effectué et que la valeur n existe pas => erreur
+			if(!find){
+				cout<<"**** ERROR : invalid Command '"<<command<<"'"<<endl;
+				cout<<"Type 'help' to see list of command"<<endl;
+				return false;
+				}
 		return true;
 	}
 
@@ -123,33 +156,51 @@ void UserCommands::executeCommand(string command){
 	//commande entrée : help => afficher le menu principal
 	if(_command[0].compare("main")==0){showHelp();return;}
 
-	//appel de la fonction test pour vérifier la saisie de l'utilisateur
-	bool okToContinue= testCommand(_command);
+	bool okToContinue=true;
+	//appel des fonctions test pour vérifier la commande
+	okToContinue=testCommand(_command[0]);
 
-	//si toutes les commandes et les options sont valides => affichage
 	if(okToContinue){
 		//commande entrée : help => afficher le menu help
-		if(_command[0].compare("help")==0){showHelp();return;}
+		if(_command[0].compare("help")==0 && _command.size()==1){showHelp();return;}
 
-		//commande d'entrée: showAll => afficher toutes les metadonnées dans le ficher
-		if(_command[0].compare("printAll")==0) {printAllMetadata();return;}
+		//commande d'entrée: printAll => afficher toutes les metadonnées dans le ficher
+		if(_command[0].compare("printAll")==0 && _command.size()==1) {printAllMetadata();return;}
 
-		if (_command[0].compare("printType")==0){printType();return;}
+		//commande d'entrée: printType => afficher tout les types existant dans le fichier
+		if (_command[0].compare("printType")==0 && _command.size()==1){printType();return;}
 
-		//print type: afficher les options saisies
+		//commande d'entrée: printValues => afficher toutes les valeurs existantes
+		//if (_command[0].compare("printValues")==0){printValues();return;}
+
 		if(_command[0].compare("print")==0){
 			if(_command.size()==1){
-				cout<<"**** ERROR : "<<"print Command needs at least one argument"<<endl;
+				cout<<"**** ERROR : "<<"print Command needs at least one argement"<<endl;
 				}
 				else{
-						printAMetadata(_command);
+						bool  ok=true;
+						unsigned int k=1;
+						while (ok && k<_command.size())
+						{
+							ok=testType(_command[k]);
+							k++;
+						}
+						if (ok){printAMetadata(_command);}
 					}
 			return;
 			}
 
-		//afficher en transparence
+		//commande d'entrée: showTransparence
 		if(_command[0].compare("showTransparence")==0){
-			showTransparence(_command[1],_command[2]);
+			if(_command.size()==1 || _command.size()>3){
+							cout<<"**** ERROR : "<<"showTransparence Command needs two argements"<<endl;
+							//cout<<"     showTransparence [TYPE] [VALUE]"<<endl;
+							}
+							else{
+									bool  ok=testType(_command[1])&& testValue(_command[2]);
+									if (ok){showTransparence(_command[1],_command[2]);}
+								}
+						return;
 		}
 
 			/**
@@ -158,10 +209,11 @@ void UserCommands::executeCommand(string command){
 				cmd.push_back("showReset");
 
 		 */
+		cout<<"**** ERROR : invalid Command '"<<command<<"'"<<endl;
+		cout<<"Type 'help' to see list of command"<<endl;
 		}
-	else{
-	cout<<"Type 'help' for commands list or close the osgViewer to close the program"<<endl;
-	}
+
+
 }
 /**
  * afficher tout les types de metadonnées existants
@@ -388,7 +440,3 @@ void UserCommands::showTransparence(string key, string value){
                                         }
 }
 }
-
-
-
-

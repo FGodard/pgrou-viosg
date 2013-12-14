@@ -35,7 +35,9 @@ private:
 	vector <string>getTypes();
 	vector <string>showTypeMetadata(osg::Object* object);
 	void showType();
-	bool testCommand( vector <string> options );
+	bool testCommand(string command );
+	bool testType(string type);
+	bool testValue(string value);
 	void printOneMetadata(osg::Object* object,string type);
 	void printAMetadata(vector <string> meta);
 	void showTransparence(string type, string value);
