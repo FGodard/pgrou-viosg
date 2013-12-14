@@ -595,9 +595,9 @@ vector<string>UserCommands::getValues(string type){
          tabl=StringToInt(tab);
 
          for(unsigned int i = 0; i < tab.size(); i++) {
-        	 for(unsigned int i = 0; i < tab.size(); i++)
-        		 if(tabl[i] > tabl[i+1])
-        			 std::swap(tabl[i], tabl[i+1]);
+        	 for(unsigned int j = 0; j < tab.size()-1 ; j++)
+        		 if(tabl[j] > tabl[j+1])
+        			 std::swap(tabl[j], tabl[j+1]);
          }
          return tabl;
  }
