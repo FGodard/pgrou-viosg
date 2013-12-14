@@ -10,26 +10,14 @@ using namespace std;
 
 UserCommands::UserCommands(osg::ref_ptr<osg::Group> root){
 	UserCommands::root=root;
+	root->accept(geodeFinder);
 	createColors();
 	createStateSets();
 
 
 }
 
-/**
- * Execute la commande entrée dans le terminal
- */
-void UserCommands::executeCommand(string command){
-	if(command.compare("help")==0){showHelp();return;}
-	if(command.compare("showAll")==0) {showAllMetadata();return;}
-	if(command.compare("setTransparence")==0) {transparenceTest();return;}
 
-	if(command.compare("setBlue")==0) {blueTest();return;}
-	if(command.compare("backToDefault")==0) {defaultTest();return;}
-
-	//Si aucune commande trouvée
-	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
-}
 
 
 void UserCommands::createColors(){
@@ -57,56 +45,114 @@ void UserCommands::createColors(){
 
 void UserCommands::createStateSets(){
 
-
-	osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
-
-
-
 	//StateSet Transparence
+	osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
 	stateSetTransparent=new osg::StateSet;
 	osg::Material* material = new osg::Material;
-	 material->setAlpha(osg::Material::FRONT_AND_BACK, 0.1);
-	 stateSetTransparent->setAttribute(material);
+	material->setAlpha(osg::Material::FRONT_AND_BACK, 0.1);
+	stateSetTransparent->setAttribute(material);
 	stateSetTransparent->setAttributeAndModes(bf, osg::StateAttribute::ON);
 
 	//StateSetColors
+	//StateSetColors[0] est la couleur par défault
 	stateSetsColors.push_back(new osg::StateSet);
+	//SateSetColors[1->9] sont les différentes couleurs
 	for(unsigned int i=0;i<9;i++){
 		osg::StateSet* stateSet = new osg::StateSet;
-			stateSet->setAttribute(materials[i]);
-			stateSetsColors.push_back(stateSet);
+		stateSet->setAttribute(materials[i]);
+		stateSetsColors.push_back(stateSet);
+	}
+
+
+}
+
+/**
+ * Execute la commande entrée dans le terminal
+ */
+void UserCommands::executeCommand(string command){
+	if(command.compare("help")==0){showHelp();return;}
+	if(command.compare("showAll")==0) {showAllMetadata();return;}
+
+	if(command.compare("reset")==0){showMetadataReset();return;}
+	if(command.compare("testColor1")==0){showMetadataByColor("yearOfConstruction");return;}
+	if(command.compare("testColor2")==0){showMetadataByColor("measuredHeight");return;}
+	if(command.compare("testTransparence1")==0){showMetadataByTransparency("measuredHeight","49");return;}
+	if(command.compare("testTransparence2")==0){showMetadataByTransparency("description","FZK/IAI TestCases Only");return;}
+	//Si aucune commande trouvée
+	cout<<"Type 'help' for commands list or close the osgViewer to close program"<<endl;
+}
+
+void UserCommands::showMetadataByTransparency(const string key,const string value){
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	for(unsigned int i=0;i<geodes.size();i++){
+		osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (geodes[i]->getUserData() );
+		if(metadata){
+			updateTransparencyState(metadata, key,value);
+			updateStateSet(geodes[i],metadata);
+		}
+	}
+}
+
+void UserCommands::updateTransparencyState(Metadata* metadata, const string key,const string value){
+	citygml::AttributesMap::const_iterator iterator;
+	if((iterator=metadata->attributes.find(key))!=metadata->attributes.end()&&
+					iterator->second.compare(value)==0)
+			{
+				metadata->isTransparent=false;
+			}else{
+				metadata->isTransparent=true;
+			}
+}
+
+void UserCommands::showMetadataByColor(const string key){
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+		for(unsigned int i=0;i<geodes.size();i++){
+			osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (geodes[i]->getUserData() );
+			if(metadata){
+				updateColorState(metadata, key);
+				updateStateSet(geodes[i],metadata);
+			}
 		}
 }
-
-
-void UserCommands::transparenceTest(){
-
-	 GeodeFinder geodeFinder;
-	 root->accept(geodeFinder);
-	 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
-
-	 for(unsigned int i=0;i<geodes.size();i++)
-	                geodes[i]->setStateSet(stateSetTransparent);
-
+void UserCommands::updateColorState(Metadata* metadata, const string key){
+	citygml::AttributesMap::const_iterator iterator;
+		if((iterator=metadata->attributes.find(key))!=metadata->attributes.end())
+				{
+					metadata->colorState=calculateColorState(key, iterator->second);
+				}else{
+					metadata->colorState=0;
+				}
 }
 
-void UserCommands::defaultTest(){
-	GeodeFinder geodeFinder;
-		 root->accept(geodeFinder);
-		 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+int UserCommands::calculateColorState(const string key,const string value){
+	//Si le type de données n'est pas numérique, on ne peut l'afficher en couleur
 
-		 for(unsigned int i=0;i<geodes.size();i++)
-		                geodes[i]->setStateSet(stateSetsColors[0]);
+	//Sinon on calcule l'intervalle auquel appartient value et on retourne la valeur de couleur correspondante
+	return 1;
 }
 
-void UserCommands::blueTest(){
-	GeodeFinder geodeFinder;
-		 root->accept(geodeFinder);
-		 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
-
-		 for(unsigned int i=0;i<geodes.size();i++)
-		                geodes[i]->setStateSet(stateSetsColors[1]);
+void UserCommands::showMetadataReset(){
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+			for(unsigned int i=0;i<geodes.size();i++){
+				osg::ref_ptr<Metadata> metadata =dynamic_cast<Metadata*> (geodes[i]->getUserData() );
+				if(metadata){
+					metadata->isTransparent=false;
+					metadata->colorState=0;
+					updateStateSet(geodes[i],metadata);
+				}
+			}
 }
+
+void UserCommands::updateStateSet(osg::Geode* geode,Metadata* metadata){
+	if(metadata->isTransparent==true){
+		geode->setStateSet(stateSetTransparent);
+	}else{
+		geode->setStateSet(stateSetsColors[metadata->colorState]);
+	}
+}
+
+
+
 
 
 

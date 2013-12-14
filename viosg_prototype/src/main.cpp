@@ -37,6 +37,7 @@ int main(int argc, char** argv )
 	viewer.setCameraManipulator(new osgGA::TrackballManipulator);
 	viewer.addEventHandler( new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()) );
 	viewer.setUpViewInWindow( 50, 50, 640, 480 );
+	viewer.getCamera()->setClearColor(osg::Vec4(0.0,0.0,0.0,1.0));
 
 	//RENDER THREAD ET UI THREAD
 	UiThread::instance()->startThread();

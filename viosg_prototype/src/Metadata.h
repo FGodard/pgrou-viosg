@@ -19,8 +19,11 @@
  */
 class Metadata :public osg::Referenced {
 public:
-	Metadata(const citygml::AttributesMap& _attributes):attributes(_attributes){};
-	//Hashmap contenant les métadonnéees
+	Metadata(const citygml::AttributesMap& _attributes):attributes(_attributes){
+		isTransparent=false;
+		colorState=0;
+	};
+
 	const citygml::AttributesMap& attributes;
 	bool isTransparent;
 	int colorState;
