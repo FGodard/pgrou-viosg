@@ -15,6 +15,7 @@
 #include <osg/BlendColor>
 #include <osg/Material>
 #include <osg/Depth>
+#include <osg/StateSet>
 
 #include "Metadata.h"
 #include "GeodeFinder.h"
@@ -25,20 +26,22 @@ public:
 	UserCommands(osg::ref_ptr<osg::Group> root);
 	void executeCommand(std::string command);
 private:
-	osg::ref_ptr<osg::Group> root;
-	void showHelp();
+	void createColors();
+	void createStateSets();
+	void test();
 
+
+	void showHelp();
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
 
-	std::string valueOfKey(osg::Object* object, std::string key);
-	void displayInColor(std::string key);
-	void displayOnly(std::string key, int value);
-	void setArrayColor();
-	void transparenceBut(std::string key, int value);
 
-	osg::Vec4Array* colors;
 
+	osg::ref_ptr<osg::Group> root;
+	vector<osg::Material*> materials;
+	vector<osg::StateSet*> stateSetsColors;
+	osg::ref_ptr<osg::StateSet> stateSetDefault;
+	osg::ref_ptr<osg::StateSet> stateSetTransparent;
 };
 
 #endif /* USERCOMMANDS_H_ */
