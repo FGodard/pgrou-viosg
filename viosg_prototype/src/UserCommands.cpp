@@ -74,7 +74,7 @@ void UserCommands::executeCommand(string command){
 	if(parsedCommand[0].compare("printAll")==0){printAllMetadata();return;}
 	if(parsedCommand[0].compare("printTypes")==0){printTypes();return;}
 	if(parsedCommand[0].compare("printValues")==0){printValues(parsedCommand);return;}
-	//if(parsedCommand[0].compare("showColor")==0){testColor(parsedCommand);return;}
+	if(parsedCommand[0].compare("showColor")==0){testColor(parsedCommand);return;}
 	if(parsedCommand[0].compare("showTransparency")==0){testTransparency(parsedCommand);return;}
 	if(parsedCommand[0].compare("resetAll")==0){resetDisplay();return;}
 	cout<<"Type 'help' for commands list or close the osgViewer to quit the program"<<endl;
