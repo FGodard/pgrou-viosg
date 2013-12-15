@@ -256,7 +256,7 @@ void UserCommands::updateStateSet(osg::Geode* geode,GeodeData* geodeData){
 	}else{
 		geode->setStateSet(stateSets[geodeData->colorState]);
 	}
-	cout<<stateSets.size()<<endl;
+
 }
 
 
