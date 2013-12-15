@@ -13,6 +13,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 	root->accept(geodeFinder);
 	createColors();
 	createStateSets();
+
 }
 
 
@@ -176,7 +177,7 @@ void UserCommands::printValues(vector<string> parsedCommand){
 void UserCommands::testColor(vector<string>parsedCommand){
 if(parsedCommand.size()!=2){cout<<"showColor takes exactly 1 argument (type to display)<<";return;}
 if(!metadataMap->hasType(parsedCommand[1])){cout<<"specified type is not present for this scene";return;}
-//TODO Change color of the objects
+showMetadataByColor(parsedCommand[1]);
 }
 
 void UserCommands::testTransparency(vector<string>parsedCommand){
@@ -247,9 +248,7 @@ int UserCommands::calculateColorState(const string key,const string value){
 	return 1;
 }
 
-void UserCommands::showMetadataReset(){
 
-}
 
 void UserCommands::updateStateSet(osg::Geode* geode,GeodeData* geodeData){
 	if(geodeData->isTransparent==true){
@@ -257,31 +256,13 @@ void UserCommands::updateStateSet(osg::Geode* geode,GeodeData* geodeData){
 	}else{
 		geode->setStateSet(stateSets[geodeData->colorState]);
 	}
-}
-
-void UserCommands::showHelp(){
-	cout<<"Commands List:"<<endl;
-	cout<<"\t"<<"'help'"<<"\t"<<"Show commands list"<<endl;
-	cout<<"\t"<<"'showAll'"<<"\t"<<"Show all metadata stored on all geodes"<<endl;
+	cout<<stateSets.size()<<endl;
 }
 
 
-/**
- * Affiche toutes les métadonnées présentes
- * On utilise le geodeFinder pour récupérer tous les objets type géode de l'arbre
- * Car les métadonnées sont stockées uniquement dans les objets Géode pour l'instant
- */
-void UserCommands::showAllMetadata(){
 
-}
 
-/**
- * Affiche les métadonnées contenu dans un objet osg
- * Il charge le userData, si il est de type Metadata, c'est qu'il contient des métadonnées
- */
-void UserCommands::showMetadata(osg::Object* osgObject){
 
-}
 
 
 

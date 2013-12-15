@@ -56,7 +56,6 @@ vector<string> MetadataMap::getSceneTypes(){
 			sceneTypes=updateWithNewData(sceneTypes,geodeTypes);
 		}
 	}
-
 	return sceneTypes;
 }
 

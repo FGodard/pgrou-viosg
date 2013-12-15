@@ -43,9 +43,10 @@ int main(int argc, char** argv )
 	//ANALYSE PRELIMINAIRE DE LA SCENE ET PREPARATION DES COMMANDES
 	MetadataMap* metadataMap=new MetadataMap(root);
 	UserCommands userCommands(root,metadataMap);
-	string command;
+
 
 	//RENDER THREAD ET UI THREAD
+	string command;
 	UiThread::instance()->startThread();
 	viewer.realize();
 	while(!viewer.done()){

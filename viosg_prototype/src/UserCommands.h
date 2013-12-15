@@ -53,14 +53,11 @@ private:
 	void updateColorState(GeodeData* geodeData, const string key);
 	int calculateColorState(const string key, const string value);
 
-	void showMetadataReset();
+
 	void updateStateSet(osg::Geode* geode, GeodeData* geodeData);
 
 
-	void test();
-	void showHelp();
-	void showAllMetadata();
-	void showMetadata(osg::Object* object);
+
 
 	osg::ref_ptr<osg::Group> root;
 	MetadataMap* metadataMap;
