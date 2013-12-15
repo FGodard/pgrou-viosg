@@ -8,6 +8,31 @@
 #include "MetadataMap.h"
 using namespace std;
 
+bool MetadataMap::hasType(string type){
+	map<string,ValuesData>::iterator itr;
+	itr=metadataMap.find(type);
+		if(itr==metadataMap.end()){
+			return false;
+		}else{
+			return true;
+		}
+		return false;
+}
+
+bool MetadataMap::hasValue(string type,string value){
+	map<string,ValuesData>::iterator itr;
+		itr=metadataMap.find(type);
+			if(itr==metadataMap.end()){
+				return false;
+			}else{
+				for(unsigned int i=0;i<itr->second.values.size();i++){
+					if(itr->second.values[i].compare(value)==0){
+						return true;
+					}
+				}
+			}
+			return false;
+}
 MetadataMap::MetadataMap(osg::ref_ptr<osg::Group> root){
 	this->root=root;
 	vector<string> sceneTypes=getSceneTypes();
@@ -15,7 +40,7 @@ MetadataMap::MetadataMap(osg::ref_ptr<osg::Group> root){
 		ValuesData valuesData=getValuesData(sceneTypes[i]);
 		metadataMap[sceneTypes[i]]=valuesData;
 	}
-	printAllMetadataTypesAndValues();
+	//printAllMetadataTypesAndValues();
 
 }
 

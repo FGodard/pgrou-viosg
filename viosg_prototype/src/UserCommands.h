@@ -20,17 +20,32 @@
 #include "GeodeData.h"
 #include "GeodeFinder.h"
 #include "citygml.h"
-
+#include "MetadataMap.h"
 class UserCommands {
 public:
-	UserCommands(osg::ref_ptr<osg::Group> root);
+	UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMap);
 	void executeCommand(std::string command);
 private:
-	//Fonctions constructeur
+	//--FONCTIONS CONSTRUCTEUR--
 	void createColors();
 	void createStateSets();
 
-	//Fonctions d'affichage des métadonnées sur la scène
+	//--FONCTIONS DE TRAITEMENT DE COMMANDES
+	std::vector<std::string> parseCommand(std::string command);
+
+
+	//--FONCTIONS RELATIVES AUX COMMANDES UTILISATEUR--
+	void printHelp();
+	void printAllMetadata();
+	void printGeodeMetadata(osg::Object* geode);
+	void printTypes();
+	void printValues(std::vector<string> parsedCommand);
+	void testColor(std::vector<string>parsedCommand);
+	void testTransparency(std::vector<string>parsedCommand);
+	void resetDisplay();
+
+
+	//--FONCTIONS INTERNES D'AFFICHAGE DES METADONEES DANS LA SCENE--
 	void showMetadataByTransparency(const string key, const string value);
 	void updateTransparencyState(GeodeData* geodeData, const string key,const string value);
 
@@ -47,16 +62,14 @@ private:
 	void showAllMetadata();
 	void showMetadata(osg::Object* object);
 
-
-
-
-
-
 	osg::ref_ptr<osg::Group> root;
+	MetadataMap* metadataMap;
+
 	GeodeFinder geodeFinder;
+
 	vector<osg::Material*> materials;
-	vector<osg::StateSet*> stateSetsColors;
-	osg::StateSet* stateSetTransparent;
+	vector<osg::StateSet*> stateSets;
+
 };
 
 #endif /* USERCOMMANDS_H_ */

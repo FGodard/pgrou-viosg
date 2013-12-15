@@ -23,8 +23,8 @@ public:
 
 	//--FONCTIONS UTILISEES PAR USERCOMMANDS
 	//Fonctions pour vérifier les paramètres fournis dans les commandes utilisateurs
-	bool isTypePresent(std::string type);
-	bool isValuePresent(std::string type, std::string value);
+	bool hasType(std::string type);
+	bool hasValue(std::string type, std::string value);
 
 private:
 	//--FONCTIONS INTERNES CONSTRUCTEUR--

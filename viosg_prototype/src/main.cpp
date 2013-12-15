@@ -40,13 +40,14 @@ int main(int argc, char** argv )
 	viewer.setUpViewInWindow( 50, 50, 640, 480 );
 	viewer.getCamera()->setClearColor(osg::Vec4(0.0,0.0,0.0,1.0));
 
+	//ANALYSE PRELIMINAIRE DE LA SCENE ET PREPARATION DES COMMANDES
+	MetadataMap* metadataMap=new MetadataMap(root);
+	UserCommands userCommands(root,metadataMap);
+	string command;
+
 	//RENDER THREAD ET UI THREAD
 	UiThread::instance()->startThread();
-	MetadataMap* metadataMap=new MetadataMap(root);
-	UserCommands userCommands(root);
-	string command;
 	viewer.realize();
-
 	while(!viewer.done()){
 		if( UiThread::instance()->copyNewCommandTo(command)) {
 		userCommands.executeCommand(command);
