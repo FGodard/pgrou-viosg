@@ -13,7 +13,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 	root->accept(geodeFinder);
 	createColors();
 	createStateSets();
-
+	storeStateSets();
 }
 
 
@@ -42,9 +42,6 @@ void UserCommands::createColors(){
 }
 
 void UserCommands::createStateSets(){
-
-
-
 	//StateSets
 	//StateSetColors[0] est la couleur par défault
 	stateSets.push_back(new osg::StateSet);
@@ -64,7 +61,17 @@ void UserCommands::createStateSets(){
 		stateSetTransparent->setAttributeAndModes(bf, osg::StateAttribute::ON);
 		stateSets.push_back(stateSetTransparent);
 }
-
+/**
+ * Stockage des StateSets dans le group factice stateSetsTree pour empêcher la suppresion des StateSets si déréfenrecement dans root
+ */
+void UserCommands::storeStateSets(){
+	stateSetsTree=new osg::Group;
+		for(unsigned int i=0;i<stateSets.size();i++){
+			osg::ref_ptr<osg::Geode> geode(new osg::Geode);
+			geode->setStateSet(stateSets[i]);
+			stateSetsTree->addChild(geode);
+		}
+}
 /**
  * Execute la commande entrée dans le terminal
  */
@@ -175,8 +182,9 @@ void UserCommands::printValues(vector<string> parsedCommand){
 }
 
 void UserCommands::testColor(vector<string>parsedCommand){
-if(parsedCommand.size()!=2){cout<<"showColor takes exactly 1 argument (type to display)<<";return;}
-if(!metadataMap->hasType(parsedCommand[1])){cout<<"specified type is not present for this scene";return;}
+if(parsedCommand.size()!=2){cout<<"showColor takes exactly 1 argument (type to display)"<<endl;;return;}
+if(!metadataMap->hasType(parsedCommand[1])){cout<<"specified type is not present for this scene"<<endl;return;}
+if(!metadataMap->isNumericType(parsedCommand[1])){cout<<"specified type doesn't contain numeric values, cannot display in colors"<<endl;return;}
 showMetadataByColor(parsedCommand[1]);
 }
 
@@ -221,31 +229,42 @@ void UserCommands::updateTransparencyState(GeodeData* metadata, const string key
 }
 
 void UserCommands::showMetadataByColor(const string key){
+	std::map<std::string,ValuesData>::iterator itr;
+		itr=metadataMap->metadataMap.find(key);
+		float minValue=atof(itr->second.values[0].c_str());
+		float maxValue=atof((itr->second.values[itr->second.values.size()-1]).c_str());
+
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 	for(unsigned int i=0;i<geodes.size();i++){
-		osg::ref_ptr<GeodeData> metadata =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
-		if(metadata){
-			updateColorState(metadata, key);
-			updateStateSet(geodes[i],metadata);
+		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
+		if(geodeData){
+			updateColorState(geodeData, key, minValue, maxValue);
+			updateStateSet(geodes[i],geodeData);
 		}
 	}
 }
 
-void UserCommands::updateColorState(GeodeData* geodeData, const string key){
+void UserCommands::updateColorState(GeodeData* geodeData, const string key, float minValue, float maxValue){
 	citygml::AttributesMap::const_iterator iterator;
 	if((iterator=geodeData->attributes.find(key))!=geodeData->attributes.end())
 	{
-		geodeData->colorState=calculateColorState(key, iterator->second);
+		float geodeValue=atof(iterator->second.c_str());
+		geodeData->colorState=calculateColorState(geodeValue, minValue,maxValue);
 	}else{
 		geodeData->colorState=0;
 	}
 }
 
-int UserCommands::calculateColorState(const string key,const string value){
-	//Si le type de données n'est pas numérique, on ne peut l'afficher en couleur
-
-	//Sinon on calcule l'intervalle auquel appartient value et on retourne la valeur de couleur correspondante
-	return 1;
+int UserCommands::calculateColorState(float geodeValue, float minValue, float maxValue){
+	int numberOfColors=stateSets.size()-2;
+	int colorState=0;
+	if(maxValue-minValue!=0.0){
+		float calcul=(geodeValue-minValue)/(maxValue-minValue)* numberOfColors;
+		colorState=(int) calcul+1;
+	}
+	if(colorState<=numberOfColors+1){
+	return colorState;
+	}else return 0;
 }
 
 

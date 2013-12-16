@@ -29,7 +29,7 @@ private:
 	//--FONCTIONS CONSTRUCTEUR--
 	void createColors();
 	void createStateSets();
-
+	void storeStateSets();
 	//--FONCTIONS DE TRAITEMENT DE COMMANDES
 	std::vector<std::string> parseCommand(std::string command);
 
@@ -50,8 +50,8 @@ private:
 	void updateTransparencyState(GeodeData* geodeData, const string key,const string value);
 
 	void showMetadataByColor(const string key);
-	void updateColorState(GeodeData* geodeData, const string key);
-	int calculateColorState(const string key, const string value);
+	void updateColorState(GeodeData* geodeData, const string key, float minValue, float maxValue);
+	int calculateColorState(float geodeValue, float minValue, float maxValue);
 
 
 	void updateStateSet(osg::Geode* geode, GeodeData* geodeData);
@@ -66,6 +66,7 @@ private:
 
 	vector<osg::Material*> materials;
 	vector<osg::StateSet*> stateSets;
+	osg::ref_ptr<osg::Group> stateSetsTree;
 
 };
 

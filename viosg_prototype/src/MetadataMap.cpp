@@ -33,6 +33,17 @@ bool MetadataMap::hasValue(string type,string value){
 			}
 			return false;
 }
+
+bool MetadataMap::isNumericType(string type){
+	map<string,ValuesData>::iterator itr;
+		itr=metadataMap.find(type);
+			if(itr==metadataMap.end()){
+				return false;
+			}else{
+				return itr->second.isNumeric;
+			}
+			return false;
+}
 MetadataMap::MetadataMap(osg::ref_ptr<osg::Group> root){
 	this->root=root;
 	vector<string> sceneTypes=getSceneTypes();

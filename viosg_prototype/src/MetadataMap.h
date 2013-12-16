@@ -24,6 +24,7 @@ public:
 	//--FONCTIONS UTILISEES PAR USERCOMMANDS
 	//Fonctions pour vérifier les paramètres fournis dans les commandes utilisateurs
 	bool hasType(std::string type);
+	bool isNumericType(std::string type);
 	bool hasValue(std::string type, std::string value);
 
 private:
