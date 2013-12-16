@@ -248,6 +248,8 @@ void UserCommands::showLegend(){
 
 			}
 
+			textGeode->addDrawable(osg::Vec3(300, 220, 0.0f), legend.nomTransparence, 30.0f));
+
 
 
 			osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();

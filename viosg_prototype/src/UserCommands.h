@@ -29,6 +29,7 @@ typedef struct {
 } Libelle;
 typedef struct {
 	std::string nomLegende;
+	std::string nomTransparence;
 	std::vector<Libelle> libelles;
 } Legende;
 
