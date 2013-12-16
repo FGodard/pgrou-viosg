@@ -108,23 +108,23 @@ vector<string> UserCommands::parseCommand(string command){
 void UserCommands::printHelp(){
 
 	cout<<" ________________________________________________________________________________________"<<endl;
-	cout<<"|																						|"<<endl;
-	cout<<"| USER GUIDE 																			|"<<endl;
+	cout<<"|                                                                                        |"<<endl;
+	cout<<"|                                USER GUIDE                                              |"<<endl;
 	cout<<"|________________________________________________________________________________________|"<<endl;
 	cout<<" ________________________________________________________________________________________"<<endl;
-	cout<<"|    COMMAND 			            |					 DESCRIPTION 					|"<<endl;
+	cout<<"| COMMAND                            | DESCRIPTION                                       |"<<endl;
 	cout<<"|____________________________________|___________________________________________________|"<<endl;
-	cout<<"| help 								| Opens the user guide 								|"<<endl;
-	cout<<"| printAll 							| Prints all metadata stored on all geodes			|"<<endl;
-	cout<<"| printTypes 						| Prints a list of present metadata types 			|"<<endl;
-	cout<<"| printValues [TYPE] 				| Prints a list of values present for given type	|"<<endl;
-	cout<<"| showColor [TYPE] 					| Shows metatadata values for given type by color	|"<<endl;
-	cout<<"| 									|  (works only if numeric type)						|"<<endl;
-	cout<<"| showTransparency [TYPE] [VALUE] 	| Hides all objects who don't have the metadata		|"<<endl;
-	cout<<"|									|  given in arguments								|"<<endl;
-	cout<<"| resetColor							| Reset the display colors of the objects			|"<<endl;
-	cout<<"| resetTransparency					| Reset the transparency of the objects				|"<<endl;
-	cout<<"| resetAll							| Reset all display parameters of the objects		|"<<endl;
+	cout<<"| help                               | Opens the user guide                              |"<<endl;
+	cout<<"| printAll                           | Prints all metadata stored on all geodes          |"<<endl;
+	cout<<"| printTypes                         | Prints a list of present metadata types           |"<<endl;
+	cout<<"| printValues [TYPE]                 | Prints a list of values present for given type    |"<<endl;
+	cout<<"| showColor [TYPE]                   | Shows metatadata values for given type by color   |"<<endl;
+	cout<<"|                                    |  (works only if numeric type)                     |"<<endl;
+	cout<<"| showTransparency [TYPE] [VALUE]    | Hides all objects who don't have the metadata     |"<<endl;
+	cout<<"|                                    |  given in arguments                               |"<<endl;
+	cout<<"| resetColor                         | Reset the display colors of the objects           |"<<endl;
+	cout<<"| resetTransparency                  | Reset the transparency of the objects             |"<<endl;
+	cout<<"| resetAll                           | Reset all display parameters of the objects       |"<<endl;
 	cout<<"|____________________________________|___________________________________________________|"<<endl;
 }
 
