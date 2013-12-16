@@ -43,6 +43,7 @@ private:
 	void testColor(std::vector<string>parsedCommand);
 	void testTransparency(std::vector<string>parsedCommand);
 	void resetDisplay();
+	void colorTest();
 
 
 	//--FONCTIONS INTERNES D'AFFICHAGE DES METADONEES DANS LA SCENE--

@@ -13,24 +13,22 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 	root->accept(geodeFinder);
 	createColors();
 	createStateSets();
-
+	colorTest();
 }
-
-
-
 
 void UserCommands::createColors(){
 	//Création des state sets
 	osg::ref_ptr<osg::Vec4Array> colors(new osg::Vec4Array);
-	colors->push_back(osg::Vec4(0.0,0.0,1.0,1.0));//index 0 bleu
-	colors->push_back(osg::Vec4(0.0,1.0,0.0,1.0));//index 1 vert
-	colors->push_back(osg::Vec4(0.0,191.0,255.0,1.0));//index 2 azur
-	colors->push_back(osg::Vec4(1.0,0.0,0.0,1.0));//index 3 rouge
-	colors->push_back(osg::Vec4(255.0,215.0,0.0,1.0));//index 4 jaune
-	colors->push_back(osg::Vec4(0.0,0.0,0.0,1.0));//index 5 noir
-	colors->push_back(osg::Vec4(0.0,238.0,0.0,1.0));//index 6 vert fluo
-	colors->push_back(osg::Vec4(255.0,0.0,255.0,1.0));//index 7 magenta
-	colors->push_back(osg::Vec4(255.0,215.0,0.0,1.0));// index 8 rose
+
+	colors->push_back(osg::Vec4(1.0,1.0,0.0,1.0));//index 1 jaune
+	colors->push_back(osg::Vec4(0.0,238.0,0.0,1.0));//index 2 vert fluo
+	colors->push_back(osg::Vec4(0.0,0.5,0.0,1.0));//index 3 vert
+	colors->push_back(osg::Vec4(0.0,191.0,255.0,1.0));//index 4 bleu clair
+	colors->push_back(osg::Vec4(0.0,0.5,0.5,1.0));//index 5 bleu moins clair
+	colors->push_back(osg::Vec4(0.0,0.0,0.5,1.0));//index 6 bleu marine
+	colors->push_back(osg::Vec4(1.0,0.0,1.0,1.0));//index 7 violet
+	colors->push_back(osg::Vec4(0.5,0.0,0.5,1.0));//index 8 violet foncé
+	colors->push_back(osg::Vec4(1.0,0.0,1.0,1.0));//index 9 rouge
 
 
 	for(unsigned int i=0;i<9;i++){
@@ -38,12 +36,9 @@ void UserCommands::createColors(){
 		material->setDiffuse(osg::Material::FRONT_AND_BACK,colors->at(i));
 		materials.push_back(material);
 	}
-
 }
 
 void UserCommands::createStateSets(){
-
-
 
 	//StateSets
 	//StateSetColors[0] est la couleur par défault
@@ -259,6 +254,12 @@ void UserCommands::updateStateSet(osg::Geode* geode,GeodeData* geodeData){
 
 }
 
+void UserCommands::colorTest(){
+                 vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+
+                 for(unsigned int j=0;j<geodes.size();j++)
+                 geodes[j]->setStateSet(stateSets[1]);
+}
 
 
 
