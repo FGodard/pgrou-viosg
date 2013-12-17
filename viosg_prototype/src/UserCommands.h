@@ -21,6 +21,14 @@
 #include "GeodeFinder.h"
 #include "citygml.h"
 #include "MetadataMap.h"
+typedef struct {
+	string color;
+        float minValue;
+        float maxValue;
+        bool isDisplayed;
+} Intervalle;
+
+
 class UserCommands {
 public:
 	UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMap);
@@ -30,9 +38,10 @@ private:
 	void createColors();
 	void createStateSets();
 	void storeStateSets();
+	void createColorsIntervalles();
+
 	//--FONCTIONS DE TRAITEMENT DE COMMANDES
 	std::vector<std::string> parseCommand(std::string command);
-
 
 	//--FONCTIONS RELATIVES AUX COMMANDES UTILISATEUR--
 	void printHelp();
@@ -42,19 +51,27 @@ private:
 	void printValues(std::vector<string> parsedCommand);
 	void testColor(std::vector<string>parsedCommand);
 	void testTransparency(std::vector<string>parsedCommand);
-	void resetDisplay();
 
 
-	//--FONCTIONS INTERNES D'AFFICHAGE DES METADONEES DANS LA SCENE--
+	//--FONCTIONS INTERNES D'AFFICHAGE DES METADONEES DANS LA SCENE 3D--
+	void updateStateSet(osg::Geode* geode, GeodeData* geodeData);
+	//Fonctions de transparence
 	void showMetadataByTransparency(const string key, const string value);
 	void updateTransparencyState(GeodeData* geodeData, const string key,const string value);
 
+	//Fonctions de couleurs
 	void showMetadataByColor(const string key);
-	void updateColorState(GeodeData* geodeData, const string key, float minValue, float maxValue);
-	int calculateColorState(float geodeValue, float minValue, float maxValue);
 
+	void calculateColorsIntervalles(std::vector<std::string> values);
+	void printColorsIntervalles();
+	void resetColorsIntervalles();
 
-	void updateStateSet(osg::Geode* geode, GeodeData* geodeData);
+	void updateColorState(GeodeData* geodeData, const string key);
+	int calculateColorState(float geodeValue);
+
+	void resetDisplay();
+		void resetColor();
+		void resetTransparency();
 
 
 
@@ -65,8 +82,11 @@ private:
 	GeodeFinder geodeFinder;
 
 	vector<osg::Material*> materials;
-	vector<osg::StateSet*> stateSets;
+	vector<osg::StateSet*> colorsStateSets;
+	osg::StateSet* transparentStateSet;
 	osg::ref_ptr<osg::Group> stateSetsTree;
+
+	vector<Intervalle> colorsIntervalles;
 
 };
 

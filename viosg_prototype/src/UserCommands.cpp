@@ -14,6 +14,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 	createColors();
 	createStateSets();
 	storeStateSets();
+	createColorsIntervalles();
 }
 
 
@@ -22,6 +23,7 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 void UserCommands::createColors(){
 	//Création des state sets
 	osg::ref_ptr<osg::Vec4Array> colors(new osg::Vec4Array);
+	/*
 	colors->push_back(osg::Vec4(0.0,0.0,1.0,1.0));//index 0 bleu
 	colors->push_back(osg::Vec4(0.0,1.0,0.0,1.0));//index 1 vert
 	colors->push_back(osg::Vec4(0.0,191.0,255.0,1.0));//index 2 azur
@@ -31,9 +33,20 @@ void UserCommands::createColors(){
 	colors->push_back(osg::Vec4(0.0,238.0,0.0,1.0));//index 6 vert fluo
 	colors->push_back(osg::Vec4(255.0,0.0,255.0,1.0));//index 7 magenta
 	colors->push_back(osg::Vec4(255.0,215.0,0.0,1.0));// index 8 rose
+	 */
+
+	colors->push_back(osg::Vec4(1.0,0.0,1.0,1.0)); //violet
+	colors->push_back(osg::Vec4(0.0,0.0,0.5,1.0)); //blue foncé
+	colors->push_back(osg::Vec4(0.0,0.0,1.0,1.0)); //bleu marine
+	colors->push_back(osg::Vec4(0.0,0.5,0.0,1.0)); //vert
+	colors->push_back(osg::Vec4(0.0,238.0,0.0,1.0)); //vert fluo
+	colors->push_back(osg::Vec4(255.0,215.0,0.0,1.0)); //jaune
+	colors->push_back( osg::Vec4(1.0f, 0.55f, 0.0f, 1.0f) );// Orange
+	colors->push_back(osg::Vec4(1.0,0.0,0.0,1.0));//rouge
 
 
-	for(unsigned int i=0;i<9;i++){
+
+	for(unsigned int i=0;i<colors->size();i++){
 		osg::Material* material = new osg::Material;
 		material->setDiffuse(osg::Material::FRONT_AND_BACK,colors->at(i));
 		materials.push_back(material);
@@ -44,33 +57,102 @@ void UserCommands::createColors(){
 void UserCommands::createStateSets(){
 	//StateSets
 	//StateSetColors[0] est la couleur par défault
-	stateSets.push_back(new osg::StateSet);
+	colorsStateSets.push_back(new osg::StateSet);
 	//SateSetColors[1->9] sont les différentes couleurs
-	for(unsigned int i=0;i<9;i++){
+	for(unsigned int i=0;i<materials.size();i++){
 		osg::StateSet* stateSet = new osg::StateSet;
 		stateSet->setAttribute(materials[i]);
-		stateSets.push_back(stateSet);
+		colorsStateSets.push_back(stateSet);
 	}
 
 	//StateSet Transparence
-		osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
-		osg::StateSet* stateSetTransparent=new osg::StateSet;
-		osg::Material* material = new osg::Material;
-		material->setAlpha(osg::Material::FRONT_AND_BACK, 0.1);
-		stateSetTransparent->setAttribute(material);
-		stateSetTransparent->setAttributeAndModes(bf, osg::StateAttribute::ON);
-		stateSets.push_back(stateSetTransparent);
+	osg::BlendFunc* bf = new osg::BlendFunc(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
+	transparentStateSet=new osg::StateSet;
+	osg::Material* material = new osg::Material;
+	material->setAlpha(osg::Material::FRONT_AND_BACK, 0.1);
+	transparentStateSet->setAttribute(material);
+	transparentStateSet->setAttributeAndModes(bf, osg::StateAttribute::ON);
+
 }
 /**
  * Stockage des StateSets dans le group factice stateSetsTree pour empêcher la suppresion des StateSets si déréfenrecement dans root
  */
 void UserCommands::storeStateSets(){
 	stateSetsTree=new osg::Group;
-		for(unsigned int i=0;i<stateSets.size();i++){
-			osg::ref_ptr<osg::Geode> geode(new osg::Geode);
-			geode->setStateSet(stateSets[i]);
-			stateSetsTree->addChild(geode);
+	for(unsigned int i=0;i<colorsStateSets.size();i++){
+		osg::ref_ptr<osg::Geode> geode(new osg::Geode);
+		geode->setStateSet(colorsStateSets[i]);
+		stateSetsTree->addChild(geode);
+	}
+	osg::ref_ptr<osg::Geode> geode(new osg::Geode);
+	geode->setStateSet(transparentStateSet);
+	stateSetsTree->addChild(geode);
+}
+
+void UserCommands::createColorsIntervalles(){
+	for(unsigned int i=0;i<materials.size();i++){
+		Intervalle intervalle;
+		intervalle.isDisplayed=false;
+		intervalle.minValue=0.0;
+		intervalle.maxValue=0.0;
+		switch(i){
+		case 0: intervalle.color="purple";break;
+		case 1: intervalle.color="dark blue";break;
+		case 2: intervalle.color="blue ";break;
+		case 3: intervalle.color="green";break;
+		case 4: intervalle.color="light green";break;
+		case 5: intervalle.color="yellow";break;
+		case 6: intervalle.color="orange";break;
+		case 7: intervalle.color="red";break;
+		default: intervalle.color="?"; break;
 		}
+		colorsIntervalles.push_back(intervalle);
+	}
+}
+
+void UserCommands::resetColorsIntervalles(){
+	for(unsigned int i=0;i<colorsIntervalles.size();i++){
+		colorsIntervalles[i].isDisplayed=false;
+		colorsIntervalles[i].maxValue=0.0;
+		colorsIntervalles[i].minValue=0.0;
+	}
+}
+void UserCommands::calculateColorsIntervalles(vector<string> values){
+	if(values.size()==0)return;
+	int valuesPerIntervalles=values.size()/colorsIntervalles.size();
+	if(valuesPerIntervalles==0){// il y a moins de valeurs que de couleurs proposées
+		for (unsigned int i =0; i<values.size(); i++ ){
+			colorsIntervalles[i].isDisplayed=true;
+			colorsIntervalles[i].minValue=atof(values[i].c_str());
+			colorsIntervalles[i].maxValue=atof(values[i].c_str());
+		}
+	}else{
+		int j =-1;
+		for(unsigned int i=0;i<colorsIntervalles.size()-1;i++){
+			colorsIntervalles[i].isDisplayed=true;
+			j=j+1;
+			colorsIntervalles[i].minValue=atof(values[j].c_str());
+			j=j+(valuesPerIntervalles-1);
+			colorsIntervalles[i].maxValue=atof(values[j].c_str());
+		}
+		colorsIntervalles[colorsIntervalles.size()-1].isDisplayed=true;
+		colorsIntervalles[colorsIntervalles.size()-1].minValue=atof(values[j+1].c_str());
+		colorsIntervalles[colorsIntervalles.size()-1].maxValue=atof(values[values.size()-1].c_str());
+	}
+}
+
+void UserCommands::printColorsIntervalles(){
+	cout<<"Colors Legend:"<<endl;
+	for(unsigned int i=0;i<colorsIntervalles.size();i++){
+		if(colorsIntervalles[i].isDisplayed==true){
+			cout<<colorsIntervalles[i].color<<":\t\t";
+			if(colorsIntervalles[i].maxValue-colorsIntervalles[i].minValue<0.1){
+				cout<<(int)colorsIntervalles[i].minValue<<endl;
+			}else{
+				cout<<(int)colorsIntervalles[i].minValue<<"\t to \t"<<(int)colorsIntervalles[i].maxValue<<endl;
+			}
+		}
+	}
 }
 /**
  * Execute la commande entrée dans le terminal
@@ -84,6 +166,8 @@ void UserCommands::executeCommand(string command){
 	if(parsedCommand[0].compare("showColor")==0){testColor(parsedCommand);return;}
 	if(parsedCommand[0].compare("showTransparency")==0){testTransparency(parsedCommand);return;}
 	if(parsedCommand[0].compare("resetAll")==0){resetDisplay();return;}
+	if(parsedCommand[0].compare("resetColor")==0){resetColor();return;}
+	if(parsedCommand[0].compare("resetTransparency")==0){resetTransparency();return;}
 	cout<<"Type 'help' for commands list or close the osgViewer to quit the program"<<endl;
 }
 
@@ -174,7 +258,7 @@ void UserCommands::printValues(vector<string> parsedCommand){
 	std::map<std::string,ValuesData>::iterator itr;
 	itr=metadataMap->metadataMap.find(parsedCommand[1]);
 	if(itr!=metadataMap->metadataMap.end()){
-	cout<<"Values for metadata type: "<<parsedCommand[1]<<endl;
+		cout<<"Values for metadata type: "<<parsedCommand[1]<<endl;
 		for(unsigned int i=0;i<itr->second.values.size();i++){
 			cout<<"\t"<<itr->second.values[i]<<endl;
 		}
@@ -182,10 +266,10 @@ void UserCommands::printValues(vector<string> parsedCommand){
 }
 
 void UserCommands::testColor(vector<string>parsedCommand){
-if(parsedCommand.size()!=2){cout<<"showColor takes exactly 1 argument (type to display)"<<endl;;return;}
-if(!metadataMap->hasType(parsedCommand[1])){cout<<"specified type is not present for this scene"<<endl;return;}
-if(!metadataMap->isNumericType(parsedCommand[1])){cout<<"specified type doesn't contain numeric values, cannot display in colors"<<endl;return;}
-showMetadataByColor(parsedCommand[1]);
+	if(parsedCommand.size()!=2){cout<<"showColor takes exactly 1 argument (type to display)"<<endl;;return;}
+	if(!metadataMap->hasType(parsedCommand[1])){cout<<"specified type is not present for this scene"<<endl;return;}
+	if(!metadataMap->isNumericType(parsedCommand[1])){cout<<"specified type doesn't contain numeric values, cannot display in colors"<<endl;return;}
+	showMetadataByColor(parsedCommand[1]);
 }
 
 void UserCommands::testTransparency(vector<string>parsedCommand){
@@ -196,14 +280,36 @@ void UserCommands::testTransparency(vector<string>parsedCommand){
 }
 void UserCommands::resetDisplay(){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	for(unsigned int i=0;i<geodes.size();i++){
+		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
+		if(geodeData){
+			geodeData->isTransparent=false;
+			geodeData->colorState=0;
+			updateStateSet(geodes[i],geodeData);
+		}
+	}
+}
+
+void UserCommands::resetColor(){
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 		for(unsigned int i=0;i<geodes.size();i++){
 			osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 			if(geodeData){
-				geodeData->isTransparent=false;
 				geodeData->colorState=0;
 				updateStateSet(geodes[i],geodeData);
 			}
 		}
+}
+
+void UserCommands::resetTransparency(){
+vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	for(unsigned int i=0;i<geodes.size();i++){
+		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
+		if(geodeData){
+			geodeData->isTransparent=false;
+			updateStateSet(geodes[i],geodeData);
+		}
+	}
 }
 
 void UserCommands::showMetadataByTransparency(const string key,const string value){
@@ -230,50 +336,50 @@ void UserCommands::updateTransparencyState(GeodeData* metadata, const string key
 
 void UserCommands::showMetadataByColor(const string key){
 	std::map<std::string,ValuesData>::iterator itr;
-		itr=metadataMap->metadataMap.find(key);
-		float minValue=atof(itr->second.values[0].c_str());
-		float maxValue=atof((itr->second.values[itr->second.values.size()-1]).c_str());
+	itr=metadataMap->metadataMap.find(key);
+
+	resetColorsIntervalles();
+	calculateColorsIntervalles(itr->second.values);
+	printColorsIntervalles();
 
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 	for(unsigned int i=0;i<geodes.size();i++){
 		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 		if(geodeData){
-			updateColorState(geodeData, key, minValue, maxValue);
+			updateColorState(geodeData, key);
 			updateStateSet(geodes[i],geodeData);
 		}
 	}
+
 }
 
-void UserCommands::updateColorState(GeodeData* geodeData, const string key, float minValue, float maxValue){
+void UserCommands::updateColorState(GeodeData* geodeData, const string key){
 	citygml::AttributesMap::const_iterator iterator;
 	if((iterator=geodeData->attributes.find(key))!=geodeData->attributes.end())
 	{
 		float geodeValue=atof(iterator->second.c_str());
-		geodeData->colorState=calculateColorState(geodeValue, minValue,maxValue);
+		geodeData->colorState=calculateColorState(geodeValue);
 	}else{
 		geodeData->colorState=0;
 	}
 }
 
-int UserCommands::calculateColorState(float geodeValue, float minValue, float maxValue){
-	int numberOfColors=stateSets.size()-2;
-	int colorState=0;
-	if(maxValue-minValue!=0.0){
-		float calcul=(geodeValue-minValue)/(maxValue-minValue)* numberOfColors;
-		colorState=(int) calcul+1;
+int UserCommands::calculateColorState(float geodeValue){
+	for(unsigned int i=0;i<colorsIntervalles.size();i++){
+		if(geodeValue<=colorsIntervalles[i].maxValue){
+			return i+1;
+		}
 	}
-	if(colorState<=numberOfColors+1){
-	return colorState;
-	}else return 0;
+	return 0;
 }
 
 
 
 void UserCommands::updateStateSet(osg::Geode* geode,GeodeData* geodeData){
 	if(geodeData->isTransparent==true){
-		geode->setStateSet(stateSets[stateSets.size()-1]);
+		geode->setStateSet(transparentStateSet);
 	}else{
-		geode->setStateSet(stateSets[geodeData->colorState]);
+		geode->setStateSet(colorsStateSets[geodeData->colorState]);
 	}
 
 }

@@ -19,7 +19,7 @@ int main(int argc, char** argv )
 	//VERIFICATION ARGC/ARGV
 	//TODO Faire la gestion du nom de fichier et arguments et aide
 	if (argc!=2){
-		cout<<"Mettre le chemin absolu ou relatif du fichier en argument!"<<endl;
+		cout<<"Failure. Enter the absolute path of a citygml/gml file as argument "<<endl;
 		return 0;
 	}
 	string filePath=argv[1];
