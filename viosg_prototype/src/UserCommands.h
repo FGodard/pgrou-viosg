@@ -24,21 +24,19 @@
 #include "citygml.h"
 #include "MetadataMap.h"
 typedef struct {
+	osg::Vec4 colorcode;
 	string color;
-        float minValue;
-        float maxValue;
-        bool isDisplayed;
+	float minValue;
+	float maxValue;
+	bool isDisplayed;
+	string label;
 } Intervalle;
 
 
 typedef struct {
-	std::string nomLibelle;
-	osg::Vec4 couleurLibelle;
-} Libelle;
-typedef struct {
 	std::string nomLegende;
 	std::string nomTransparence;
-	std::vector<Libelle> libelles;
+	std::vector<Intervalle> libelles;
 } Legende;
 
 class UserCommands {
@@ -46,6 +44,7 @@ public:
 	UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMap);
 	void executeCommand(std::string command);
 	Legende legend;
+
 private:
 	//--FONCTIONS CONSTRUCTEUR--
 	void createColors();
@@ -86,7 +85,7 @@ private:
 	void printColorsIntervalles();
 	void resetColorsIntervalles();
 
-	void updateColorState(GeodeData* geodeData, const string key);
+	int updateColorState(GeodeData* geodeData, const string key);
 	int calculateColorState(float geodeValue);
 
 	void resetDisplay();
@@ -105,7 +104,7 @@ private:
 	vector<osg::StateSet*> colorsStateSets;
 	osg::StateSet* transparentStateSet;
 	osg::ref_ptr<osg::Group> stateSetsTree;
-
+	osg::ref_ptr<osg::Vec4Array> colors;
 	vector<Intervalle> colorsIntervalles;
 
 };

@@ -15,8 +15,6 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 	createStateSets();
 	storeStateSets();
 	createColorsIntervalles();
-	UserCommands::hudIndex = -1;
-	//UserCommands::legend = {};
 }
 
 
@@ -156,6 +154,7 @@ void UserCommands::printColorsIntervalles(){
 		}
 	}
 }
+
 /**
  * Execute la commande entrée dans le terminal
  */
@@ -348,16 +347,19 @@ void UserCommands::showMetadataByColor(const string key){
 
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 	for(unsigned int i=0;i<geodes.size();i++){
+		int j = 0;
 		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 		if(geodeData){
+
 			updateColorState(geodeData, key);
+
 			updateStateSet(geodes[i],geodeData);
 		}
 	}
 
 }
 
-void UserCommands::updateColorState(GeodeData* geodeData, const string key){
+int UserCommands::updateColorState(GeodeData* geodeData, const string key){
 	citygml::AttributesMap::const_iterator iterator;
 	if((iterator=geodeData->attributes.find(key))!=geodeData->attributes.end())
 	{
@@ -366,7 +368,7 @@ void UserCommands::updateColorState(GeodeData* geodeData, const string key){
 	}else{
 		geodeData->colorState=0;
 	}
-
+	return geodeData->colorState;
 }
 
 int UserCommands::calculateColorState(float geodeValue){
@@ -539,8 +541,8 @@ void UserCommands::showLegend(){
 				int b = 165 - 50*(i%4);
 				//Coordonnée horizontale
 				int a = 35 + 60*(i-i%4);
-				textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), legend.libelles[i].couleurLibelle));
-				textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), legend.libelles[i].nomLibelle, 20.0f));
+				textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), legend.libelles[i].colorcode));
+				textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), legend.libelles[i].label, 20.0f));
 
 			}
 
