@@ -16,6 +16,8 @@
 #include <osg/Material>
 #include <osg/Depth>
 #include <osg/StateSet>
+#include <osgText/Text>
+#include <osgText/TextBase>
 
 #include "GeodeData.h"
 #include "GeodeFinder.h"
@@ -29,10 +31,21 @@ typedef struct {
 } Intervalle;
 
 
+typedef struct {
+	std::string nomLibelle;
+	osg::Vec4 couleurLibelle;
+} Libelle;
+typedef struct {
+	std::string nomLegende;
+	std::string nomTransparence;
+	std::vector<Libelle> libelles;
+} Legende;
+
 class UserCommands {
 public:
 	UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMap);
 	void executeCommand(std::string command);
+	Legende legend;
 private:
 	//--FONCTIONS CONSTRUCTEUR--
 	void createColors();
@@ -42,6 +55,13 @@ private:
 
 	//--FONCTIONS DE TRAITEMENT DE COMMANDES
 	std::vector<std::string> parseCommand(std::string command);
+
+	//--FONCTIONS DE LA LEGENDE
+	int hudIndex;
+	osgText::Text* createText( const osg::Vec3& pos, const std::string& content, float size ) ;
+	osg::Drawable* createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, const osg::Vec4& color, osg::Image* image);
+	osg::Camera* createHUDCamera();
+	void showLegend();
 
 	//--FONCTIONS RELATIVES AUX COMMANDES UTILISATEUR--
 	void printHelp();
