@@ -347,7 +347,6 @@ void UserCommands::showMetadataByColor(const string key){
 
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 	for(unsigned int i=0;i<geodes.size();i++){
-		int j = 0;
 		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 		if(geodeData){
 
