@@ -118,6 +118,7 @@ void UserCommands::resetColorsIntervalles(){
 		colorsIntervalles[i].isDisplayed=false;
 		colorsIntervalles[i].maxValue=0.0;
 		colorsIntervalles[i].minValue=0.0;
+		legend.nomLegende="";
 	}
 }
 void UserCommands::calculateColorsIntervalles(vector<string> values){
@@ -149,12 +150,19 @@ void UserCommands::printColorsIntervalles(){
 	for(unsigned int i=0;i<colorsIntervalles.size();i++){
 		if(colorsIntervalles[i].isDisplayed==true){
 			cout<<colorsIntervalles[i].color<<":\t\t";
+			std::ostringstream ss, ssMin, ssMax;
 			if(colorsIntervalles[i].maxValue-colorsIntervalles[i].minValue<0.1){
 				cout<<(int)colorsIntervalles[i].minValue<<endl;
-				colorsIntervalles[i].label = colorsIntervalles[i].minValue;
+				ss << colorsIntervalles[i].minValue;
+				colorsIntervalles[i].label = ss.str();
+
 			}else{
 				cout<<(int)colorsIntervalles[i].minValue<<"\t to \t"<<(int)colorsIntervalles[i].maxValue<<endl;
-				colorsIntervalles[i].label = colorsIntervalles[i].minValue + " to " + colorsIntervalles[i].maxValue;
+				ssMin << colorsIntervalles[i].minValue;
+				std::string sMin(ssMin.str());
+				ssMax << colorsIntervalles[i].maxValue;
+				std::string sMax(ssMax.str());
+				colorsIntervalles[i].label = "De " + sMin + " a " + sMax;
 			}
 
 		}
@@ -289,6 +297,7 @@ void UserCommands::testTransparency(vector<string>parsedCommand){
 }
 void UserCommands::resetDisplay(){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	resetColorsIntervalles();
 	for(unsigned int i=0;i<geodes.size();i++){
 		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 		if(geodeData){
@@ -297,6 +306,8 @@ void UserCommands::resetDisplay(){
 			updateStateSet(geodes[i],geodeData);
 		}
 	}
+	showLegend();
+	showLegend();
 }
 
 void UserCommands::resetColor(){
@@ -330,6 +341,7 @@ void UserCommands::showMetadataByTransparency(const string key,const string valu
 			updateStateSet(geodes[i],metadata);
 		}
 	}
+
 }
 
 void UserCommands::updateTransparencyState(GeodeData* metadata, const string key,const string value){
