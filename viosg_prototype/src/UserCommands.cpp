@@ -99,14 +99,14 @@ void UserCommands::createColorsIntervalles(){
 		intervalle.minValue=0.0;
 		intervalle.maxValue=0.0;
 		switch(i){
-		case 0: intervalle.color="purple";break;
-		case 1: intervalle.color="dark blue";break;
-		case 2: intervalle.color="blue ";break;
-		case 3: intervalle.color="green";break;
-		case 4: intervalle.color="light green";break;
-		case 5: intervalle.color="yellow";break;
-		case 6: intervalle.color="orange";break;
-		case 7: intervalle.color="red";break;
+		case 0: intervalle.color="purple";intervalle.colorcode=osg::Vec4(1.0,0.0,1.0,1.0);break;
+		case 1: intervalle.color="dark blue";intervalle.colorcode=osg::Vec4(0.0,0.0,0.5,1.0);break;
+		case 2: intervalle.color="blue ";intervalle.colorcode=osg::Vec4(0.0,0.0,1.0,1.0);break;
+		case 3: intervalle.color="green";intervalle.colorcode=osg::Vec4(0.0,0.5,0.0,1.0);break;
+		case 4: intervalle.color="light green";intervalle.colorcode=osg::Vec4(0.0,238.0,0.0,1.0);break;
+		case 5: intervalle.color="yellow";intervalle.colorcode=osg::Vec4(255.0,215.0,0.0,1.0);break;
+		case 6: intervalle.color="orange";intervalle.colorcode=osg::Vec4(1.0f, 0.55f, 0.0f, 1.0f);break;
+		case 7: intervalle.color="red";intervalle.colorcode=osg::Vec4(1.0,0.0,0.0,1.0);break;
 		default: intervalle.color="?"; break;
 		}
 		colorsIntervalles.push_back(intervalle);
@@ -151,9 +151,12 @@ void UserCommands::printColorsIntervalles(){
 			cout<<colorsIntervalles[i].color<<":\t\t";
 			if(colorsIntervalles[i].maxValue-colorsIntervalles[i].minValue<0.1){
 				cout<<(int)colorsIntervalles[i].minValue<<endl;
+				colorsIntervalles[i].label = colorsIntervalles[i].minValue;
 			}else{
 				cout<<(int)colorsIntervalles[i].minValue<<"\t to \t"<<(int)colorsIntervalles[i].maxValue<<endl;
+				colorsIntervalles[i].label = colorsIntervalles[i].minValue + " to " + colorsIntervalles[i].maxValue;
 			}
+
 		}
 	}
 }
@@ -537,14 +540,14 @@ void UserCommands::showLegend(){
 			textGeode->addDrawable(createText(osg::Vec3(20, 140, 0.0f), "Affichage des tests", 30.0f));
 			textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), legend.nomLegende, 30.0f));
 
-			int nbLibelles = legend.libelles.size();
+			int nbLibelles = colorsIntervalles.size();
 			for (int i = 0; i < nbLibelles; i++) {
 				//Coordonnée verticale
 				int b = 165 - 50*(i%4);
 				//Coordonnée horizontale
 				int a = 35 + 60*(i-i%4);
-				textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), legend.libelles[i].colorcode));
-				textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), legend.libelles[i].label, 20.0f));
+				textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), colorsIntervalles[i].colorcode));
+				textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), colorsIntervalles[i].label, 20.0f));
 
 			}
 

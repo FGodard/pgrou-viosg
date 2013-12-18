@@ -36,7 +36,6 @@ typedef struct {
 typedef struct {
 	std::string nomLegende;
 	std::string nomTransparence;
-	std::vector<Intervalle> libelles;
 } Legende;
 
 class UserCommands {
