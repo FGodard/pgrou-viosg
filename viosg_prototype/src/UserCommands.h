@@ -56,7 +56,7 @@ private:
 	std::vector<std::string> parseCommand(std::string command);
 
 	//--FONCTIONS DE LA LEGENDE
-	int hudIndex;
+	float hudIndex;
 	osgText::Text* createText( const osg::Vec3& pos, const std::string& content, float size ) ;
 	osg::Drawable* createLegendPolygon(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, const osg::Vec4& color, osg::Image* image);
 	osg::Camera* createHUDCamera();

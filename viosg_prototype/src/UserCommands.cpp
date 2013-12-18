@@ -15,6 +15,9 @@ UserCommands::UserCommands(osg::ref_ptr<osg::Group> root,MetadataMap* metadataMa
 	createStateSets();
 	storeStateSets();
 	createColorsIntervalles();
+	hudIndex = -1;
+	legend.nomLegende = "";
+	legend.nomTransparence = "";
 }
 
 
@@ -355,7 +358,7 @@ void UserCommands::showMetadataByColor(const string key){
 			updateStateSet(geodes[i],geodeData);
 		}
 	}
-
+	legend.nomLegende = "Affichage par " + key;
 }
 
 int UserCommands::updateColorState(GeodeData* geodeData, const string key){
@@ -526,13 +529,13 @@ osg::Camera* UserCommands::createHUDCamera() {
  * Ajoute un HUD qui contient la légende.
  */
 void UserCommands::showLegend(){
-	if (hudIndex >= 0) {
+	if (hudIndex < 0) {
 		if (legend.nomLegende != "") {
 			//Creates colored figures and a text legend and places them in the HUD
 			osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
 			//TODO Bug incompréhensible d'affichage, il faut en créer deux
 			textGeode->addDrawable(createText(osg::Vec3(20, 140, 0.0f), "Affichage des tests", 30.0f));
-			textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), "Affichage des tests", 30.0f));
+			textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), legend.nomLegende, 30.0f));
 
 			int nbLibelles = legend.libelles.size();
 			for (int i = 0; i < nbLibelles; i++) {
