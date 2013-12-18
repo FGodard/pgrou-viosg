@@ -174,17 +174,21 @@ void UserCommands::printColorsIntervalles(){
  */
 void UserCommands::executeCommand(string command){
 	vector<string> parsedCommand=parseCommand(command);
-	if(parsedCommand[0].compare("help")==0){printHelp();return;}
-	if(parsedCommand[0].compare("printAll")==0){printAllMetadata();return;}
-	if(parsedCommand[0].compare("printTypes")==0){printTypes();return;}
-	if(parsedCommand[0].compare("printValues")==0){printValues(parsedCommand);return;}
-	if(parsedCommand[0].compare("showColor")==0){testColor(parsedCommand);return;}
-	if(parsedCommand[0].compare("showTransparency")==0){testTransparency(parsedCommand);return;}
-	if(parsedCommand[0].compare("resetAll")==0){resetDisplay();return;}
-	if(parsedCommand[0].compare("resetColor")==0){resetColor();return;}
-	if(parsedCommand[0].compare("showLegend")==0) {showLegend();return;}
-	if(parsedCommand[0].compare("resetTransparency")==0){resetTransparency();return;}
-	cout<<"Type 'help' for commands list or close the osgViewer to quit the program"<<endl;
+
+	if(parsedCommand[0].compare("help")==0){printHelp();}
+	else if(parsedCommand[0].compare("printAll")==0){printAllMetadata();}
+	else if(parsedCommand[0].compare("printTypes")==0){printTypes();}
+	else if(parsedCommand[0].compare("printValues")==0){printValues(parsedCommand);}
+	else if(parsedCommand[0].compare("showColor")==0){testColor(parsedCommand);}
+	else if(parsedCommand[0].compare("showTransparency")==0){testTransparency(parsedCommand);}
+	else if(parsedCommand[0].compare("resetAll")==0){resetDisplay();}
+	else if(parsedCommand[0].compare("resetColor")==0){resetColor();}
+	else if(parsedCommand[0].compare("showLegend")==0) {showLegend();}
+	else if(parsedCommand[0].compare("resetTransparency")==0){resetTransparency();}
+	else {cout<<"Type 'help' for commands list or close the osgViewer to quit the program"<<endl;}
+	//
+	showLegend();
+	showLegend();
 }
 
 
@@ -296,22 +300,13 @@ void UserCommands::testTransparency(vector<string>parsedCommand){
 	showMetadataByTransparency(parsedCommand[1],parsedCommand[2]);
 }
 void UserCommands::resetDisplay(){
-	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
-	resetColorsIntervalles();
-	for(unsigned int i=0;i<geodes.size();i++){
-		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
-		if(geodeData){
-			geodeData->isTransparent=false;
-			geodeData->colorState=0;
-			updateStateSet(geodes[i],geodeData);
-		}
-	}
-	showLegend();
-	showLegend();
+	UserCommands::resetColor();
+	UserCommands::resetTransparency();
 }
 
 void UserCommands::resetColor(){
 	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	resetColorsIntervalles();
 		for(unsigned int i=0;i<geodes.size();i++){
 			osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 			if(geodeData){
@@ -319,10 +314,11 @@ void UserCommands::resetColor(){
 				updateStateSet(geodes[i],geodeData);
 			}
 		}
+
 }
 
 void UserCommands::resetTransparency(){
-vector<osg::Geode*> geodes=geodeFinder.getNodeList();
+	vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 	for(unsigned int i=0;i<geodes.size();i++){
 		osg::ref_ptr<GeodeData> geodeData =dynamic_cast<GeodeData*> (geodes[i]->getUserData() );
 		if(geodeData){
@@ -330,6 +326,8 @@ vector<osg::Geode*> geodes=geodeFinder.getNodeList();
 			updateStateSet(geodes[i],geodeData);
 		}
 	}
+	legend.nomTransparence = "";
+
 }
 
 void UserCommands::showMetadataByTransparency(const string key,const string value){
@@ -341,7 +339,7 @@ void UserCommands::showMetadataByTransparency(const string key,const string valu
 			updateStateSet(geodes[i],metadata);
 		}
 	}
-
+	legend.nomTransparence = "Affichage par transparence de " + key + " - " + value;
 }
 
 void UserCommands::updateTransparencyState(GeodeData* metadata, const string key,const string value){
@@ -544,38 +542,47 @@ osg::Camera* UserCommands::createHUDCamera() {
  * Ajoute un HUD qui contient la légende.
  */
 void UserCommands::showLegend(){
+	/* hudIndex donne une indication sur l'affichage actuel de la légende, s'il est positif, il contient
+	 * l'index de l'objet HUD dans l'objet parent root
+	 */
 	if (hudIndex < 0) {
-		if (legend.nomLegende != "") {
+		//On crée la géode qui contient la légende
+		osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
+		/*Les variables nomLegende et nomTransparence sont des chaînes de caractères vides
+		 * s'il n'y a pas de métadonnée mise en valeur
+		 */
+		if ((legend.nomLegende != "") || (legend.nomTransparence != "")) {
 			//Creates colored figures and a text legend and places them in the HUD
-			osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
-			//TODO Bug incompréhensible d'affichage, il faut en créer deux
+
+			//TODO Bug d'affichage non résolu, le premier Drawable ajouté n'est pas affiché donc on crée celui-ci
 			textGeode->addDrawable(createText(osg::Vec3(20, 140, 0.0f), "Affichage des tests", 30.0f));
-			textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), legend.nomLegende, 30.0f));
+			//Cas de l'affichage par couleurs
+			if (legend.nomLegende != "") {
 
-			int nbLibelles = colorsIntervalles.size();
-			for (int i = 0; i < nbLibelles; i++) {
-				//Coordonnée verticale
-				int b = 165 - 50*(i%4);
-				//Coordonnée horizontale
-				int a = 35 + 60*(i-i%4);
-				textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), colorsIntervalles[i].colorcode));
-				textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), colorsIntervalles[i].label, 20.0f));
+				textGeode->addDrawable(createText(osg::Vec3(20, 220, 0.0f), legend.nomLegende, 30.0f));
 
+				int nbLibelles = colorsIntervalles.size();
+				for (int i = 0; i < nbLibelles; i++) {
+					//Calcul de la coordonnée verticale
+					int b = 165 - 50*(i%4);
+					//Calcul de la coordonnée horizontale
+					int a = 35 + 60*(i-i%4);
+					textGeode->addDrawable(createLegendPolygon(osg::Vec3(a - 25, b, 0.0f), osg::Vec3(20, 0, 0.0f), osg::Vec3(0, 20, 0.0f), colorsIntervalles[i].colorcode));
+					textGeode->addDrawable(createText(osg::Vec3(a, b, 0.0f), colorsIntervalles[i].label, 20.0f));
+
+				}
+			}
+			//Cas de l'affichage par transparence
+			if (legend.nomTransparence != "") {
+				textGeode->addDrawable(createText(osg::Vec3(20, 260, 0.0f), legend.nomTransparence, 30.0f));
 			}
 
-			textGeode->addDrawable(createText(osg::Vec3(300, 220, 0.0f), legend.nomTransparence, 30.0f));
-
-
-
-			osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
-			hudCamera->addChild( textGeode.get() );
-			hudCamera->setName("HUD");
-			root->addChild(hudCamera);
-			hudIndex = root->getChildIndex(hudCamera);
 		}
-		else {
-			cout << "Il n'y a pas de légende à afficher." <<endl;
-		}
+		osg::ref_ptr<osg::Camera> hudCamera = createHUDCamera();
+		hudCamera->addChild( textGeode.get() );
+		hudCamera->setName("HUD");
+		root->addChild(hudCamera);
+		hudIndex = root->getChildIndex(hudCamera);
 	}
 	else {
 		root->removeChild(hudIndex, 1);
